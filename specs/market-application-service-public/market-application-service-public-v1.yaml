@@ -1,0 +1,394 @@
+openapi: 3.0.1
+info:
+  title: API Public V1
+  version: public-v1
+servers:
+- url: https://api.gateway.croesus.com
+- url: https://api-nonprod.gateway.croesus.com
+security:
+- Bearer: []
+paths:
+  /mkt/api/v1/securities/{securityId}/price-histories:
+    get:
+      tags:
+      - Securities
+      summary: Get the Price Histories for a given security.
+      description: "`min ref 2026-08 (90.53)`\r\n</br>\r\n</br>\r\n            Get\
+        \ the Price Histories for a given security id. StartDate and EndDate are required,\
+        \ with a maximum range of 1 year."
+      operationId: getSecurityPriceHistories
+      parameters:
+      - name: securityId
+        in: path
+        description: A croesus id for the security
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: startDate
+        in: query
+        description: Start date of the HistoryDate (yyyy-MM-dd).
+        required: true
+        schema:
+          type: string
+          format: date-time
+      - name: endDate
+        in: query
+        description: End date of the HistoryDate (yyyy-MM-dd).
+        required: true
+        schema:
+          type: string
+          format: date-time
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecurityPriceResponseListStandard'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /mkt/api/v1/securities/{securityId}/distribution-histories:
+    get:
+      tags:
+      - Securities
+      summary: Get the Distributions Histories for a given security id.
+      description: '`min ref 2026-08 (90.53)`'
+      operationId: getSecurityDistributionHistories
+      parameters:
+      - name: securityId
+        in: path
+        description: A croesus id for the security
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: startDate
+        in: query
+        description: Start date of the DateType chosen (yyyy-MM-dd).
+        schema:
+          type: string
+          format: date-time
+      - name: endDate
+        in: query
+        description: End date of the DateType chosen (yyyy-MM-dd).
+        schema:
+          type: string
+          format: date-time
+      - name: dateType
+        in: query
+        description: ''
+        schema:
+          type: string
+      - name: sortingRules
+        in: query
+        description: "List of properties to sort. \\\r\nUse comma as delimiter and\
+          \ a - sign for descending ( i.e. -RecordDate ) \\\r\n*Available values*:\
+          \ RecordDate, ExDividendDate, PaymentDate, DistributionTotal, CapitalGains,\
+          \ DividendAmount, Interest, ReturnOfCapital, ForeignDividend"
+        schema:
+          type: string
+          format: List of strings seperated by commas, e.g, 'string1,string2,string3'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecurityDistributionResponseListStandard'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          readOnly: true
+        Response:
+          type: object
+          description: Aways null since its an error
+          format: Any object
+          nullable: true
+          readOnly: true
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: A list of message that contains any errors or warning that
+            should be addressed
+          nullable: true
+      description: Standard generic response for errors cases
+    SecurityDistributionResponse:
+      type: object
+      properties:
+        SecurityId:
+          type: integer
+          description: SecurityId.
+          format: int64
+          nullable: true
+        Symbol:
+          type: string
+          description: Security symbol.
+          nullable: true
+        SecurityNumber:
+          type: string
+          description: Security number (secufirm).
+          nullable: true
+        RecordDate:
+          type: string
+          description: Dividend record date.
+          format: date-time
+          nullable: true
+        DividendExDate:
+          type: string
+          description: Dividend ex-date.
+          format: date-time
+          nullable: true
+        PaymentDate:
+          type: string
+          description: Payment date.
+          format: date-time
+          nullable: true
+        ReinvestDate:
+          type: string
+          description: Reinvest date.
+          format: date-time
+          nullable: true
+        LastUpdate:
+          type: string
+          description: Last update date.
+          format: date-time
+          nullable: true
+        TotalDistributions:
+          type: number
+          description: Total distribution amount.
+          format: double
+          nullable: true
+        CapitalGains:
+          type: number
+          description: Capital gain amount.
+          format: double
+          nullable: true
+        Dividends:
+          type: number
+          description: Dividends amount.
+          format: double
+          nullable: true
+        Interest:
+          type: number
+          description: Interest amount.
+          format: double
+          nullable: true
+        ReturnOfCapital:
+          type: number
+          description: Return of capital amount.
+          format: double
+          nullable: true
+        ForeignDividend:
+          type: number
+          description: Foreign dividend amount.
+          format: double
+          nullable: true
+        IsSpecialDividend:
+          type: boolean
+          description: Value indicating whether the dividend is special.
+          nullable: true
+        IsManual:
+          type: boolean
+          description: Value indicating whether the dividend is manual.
+          nullable: true
+        Currency:
+          type: string
+          description: Currency of the dividend.
+          nullable: true
+      description: Represents the response containing security price information.
+    SecurityDistributionResponseListStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          readOnly: true
+        Response:
+          type: array
+          items:
+            $ref: '#/components/schemas/SecurityDistributionResponse'
+          description: The real response object/>
+          nullable: true
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    SecurityPriceResponse:
+      type: object
+      properties:
+        SecurityId:
+          type: integer
+          description: SecurityId.
+          format: int64
+          nullable: true
+        Symbol:
+          type: string
+          description: Security symbol.
+          nullable: true
+        SecurityNumber:
+          type: string
+          description: Security number (secufirm).
+          nullable: true
+        HistoryDate:
+          type: string
+          description: Security history date.
+          format: date-time
+          nullable: true
+        BidPrice:
+          type: number
+          description: Security bid price.
+          format: double
+          nullable: true
+        AskPrice:
+          type: number
+          description: Security ask price.
+          format: double
+          nullable: true
+        ClosePrice:
+          type: number
+          description: Security close price.
+          format: double
+          nullable: true
+        Currency:
+          type: string
+          description: Security currency.
+          nullable: true
+        LastUpdate:
+          type: string
+          description: Security last update date.
+          format: date-time
+          nullable: true
+      description: Represents the response containing security price information.
+    SecurityPriceResponseListStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          readOnly: true
+        Response:
+          type: array
+          items:
+            $ref: '#/components/schemas/SecurityPriceResponse'
+          description: The real response object/>
+          nullable: true
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    StandardMessage:
+      type: object
+      properties:
+        Type:
+          $ref: '#/components/schemas/StandardMessageType'
+        Code:
+          type: integer
+          description: Error code. Used for internal investigation.
+          format: int64
+          nullable: true
+        Message:
+          type: string
+          description: The error message.
+          nullable: true
+        Source:
+          type: string
+          description: Where the error occur in our system. Used for internal investigation.
+          nullable: true
+      description: A list of message that contains any errors or warning that should
+        be addressed
+    StandardMessageType:
+      enum:
+      - Unknown
+      - Information
+      - Error
+      - Warning
+      type: string
+      description: A list of possible values for the message type
+  securitySchemes:
+    Bearer:
+      type: http
+      description: JWT Authorization header using the Bearer scheme. (JWT_GENERATED
+        ONLY)
+      scheme: bearer
+      bearerFormat: JWT
+x-headmatter:
+  readable_by:
+  - market-public
+  - croesus-dev

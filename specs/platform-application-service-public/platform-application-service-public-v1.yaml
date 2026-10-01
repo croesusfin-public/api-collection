@@ -1,0 +1,5627 @@
+openapi: 3.0.1
+info:
+  title: Platform Services - Public
+  description: Service that allows clients to perform Platform Management
+  version: '1'
+servers:
+- url: https://api.gateway.croesus.com
+- url: https://api-nonprod.gateway.croesus.com
+security:
+- Bearer: []
+paths:
+  /plf/scim/v2/Users:
+    get:
+      tags:
+      - Users
+      summary: Retrieves a list of SCIM users with optional filtering, sorting, and
+        pagination.
+      operationId: Users_GetUsers
+      parameters:
+      - name: filter
+        in: query
+        description: SCIM filter expression (e.g., 'userName eq "john.doe"')
+        schema:
+          type: string
+      - name: attributes
+        in: query
+        description: Comma-separated list of attributes to include in response
+        schema:
+          type: string
+      - name: excludedAttributes
+        in: query
+        description: Comma-separated list of attributes to exclude from response
+        schema:
+          type: string
+      - name: sortBy
+        in: query
+        description: Attribute name to sort by (e.g., 'userName', 'displayName')
+        schema:
+          type: string
+      - name: sortOrder
+        in: query
+        description: 'Sort order: ''ascending'' or ''descending'''
+        schema:
+          type: string
+      - name: startIndex
+        in: query
+        description: '1-based start index for pagination (default: 1)'
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: count
+        in: query
+        description: 'Number of resources to return per page (default: 20)'
+        schema:
+          type: integer
+          format: int32
+          default: 20
+      responses:
+        '200':
+          description: OK
+          content:
+            application/scim+json:
+              schema:
+                $ref: '#/components/schemas/ScimUserScimListResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/scim+json:
+              schema:
+                $ref: '#/components/schemas/ScimError'
+        '500':
+          description: Internal Server Error
+          content:
+            application/scim+json:
+              schema:
+                $ref: '#/components/schemas/ScimError'
+    post:
+      tags:
+      - Users
+      summary: Creates a new SCIM user resource.
+      operationId: Users_CreateUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScimUser'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/ScimUser'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/ScimUser'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/scim+json:
+              schema:
+                $ref: '#/components/schemas/ScimUser'
+        '400':
+          description: Bad Request
+          content:
+            application/scim+json:
+              schema:
+                $ref: '#/components/schemas/ScimError'
+        '409':
+          description: Conflict
+          content:
+            application/scim+json:
+              schema:
+                $ref: '#/components/schemas/ScimError'
+        '500':
+          description: Internal Server Error
+          content:
+            application/scim+json:
+              schema:
+                $ref: '#/components/schemas/ScimError'
+  /plf/scim/v2/Users/.search:
+    post:
+      tags:
+      - Users
+      summary: Searches for SCIM users using POST with search request body.
+      operationId: Users_SearchUsers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScimSearchRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/ScimSearchRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/ScimSearchRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/scim+json:
+              schema:
+                $ref: '#/components/schemas/ScimUserScimListResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/scim+json:
+              schema:
+                $ref: '#/components/schemas/ScimError'
+        '500':
+          description: Internal Server Error
+          content:
+            application/scim+json:
+              schema:
+                $ref: '#/components/schemas/ScimError'
+  /plf/scim/v2/Users/{id}:
+    get:
+      tags:
+      - Users
+      summary: Retrieves a specific SCIM user by their unique identifier.
+      operationId: Users_GetUser
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/scim+json:
+              schema:
+                $ref: '#/components/schemas/ScimUser'
+        '404':
+          description: Not Found
+          content:
+            application/scim+json:
+              schema:
+                $ref: '#/components/schemas/ScimError'
+        '500':
+          description: Internal Server Error
+          content:
+            application/scim+json:
+              schema:
+                $ref: '#/components/schemas/ScimError'
+    put:
+      tags:
+      - Users
+      summary: Updates an existing SCIM user by replacing all attributes.
+      operationId: Users_UpdateUser
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScimUser'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/ScimUser'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/ScimUser'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/scim+json:
+              schema:
+                $ref: '#/components/schemas/ScimUser'
+        '400':
+          description: Bad Request
+          content:
+            application/scim+json:
+              schema:
+                $ref: '#/components/schemas/ScimError'
+        '404':
+          description: Not Found
+          content:
+            application/scim+json:
+              schema:
+                $ref: '#/components/schemas/ScimError'
+        '500':
+          description: Internal Server Error
+          content:
+            application/scim+json:
+              schema:
+                $ref: '#/components/schemas/ScimError'
+    patch:
+      tags:
+      - Users
+      summary: Partially updates a SCIM user using JSON Patch operations.
+      operationId: Users_PatchUser
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScimPatchRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/ScimPatchRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/ScimPatchRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/scim+json:
+              schema:
+                $ref: '#/components/schemas/ScimUser'
+        '400':
+          description: Bad Request
+          content:
+            application/scim+json:
+              schema:
+                $ref: '#/components/schemas/ScimError'
+        '404':
+          description: Not Found
+          content:
+            application/scim+json:
+              schema:
+                $ref: '#/components/schemas/ScimError'
+        '500':
+          description: Internal Server Error
+          content:
+            application/scim+json:
+              schema:
+                $ref: '#/components/schemas/ScimError'
+components:
+  schemas:
+    AccessLevelResponse:
+      required:
+      - PartyLevel
+      - PartyLevelId
+      - PartyLevelName
+      type: object
+      properties:
+        PartyLevelId:
+          type: integer
+          description: Valeur numérique de l'enum PartyLevel
+          format: int32
+        PartyLevel:
+          type: string
+          description: Nom de la valeur de l'enum PartyLevel
+          nullable: true
+        PartyLevelName:
+          type: string
+          description: Valeur localisée du PartyLevel
+          nullable: true
+      description: Reponse contenant les informations nécessaires pour afficher un
+        niveau d'accès
+    AccessLevelResponseListStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccessLevelResponse'
+          description: The real response object/>
+          nullable: true
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    AccountClass:
+      enum:
+      - Real
+      - RealManual
+      - External
+      - Fictitious
+      - Model
+      - Sleeve
+      - Basket
+      - Closed
+      type: string
+    AccountsPadResponseSortingRuleModel:
+      type: object
+      properties:
+        Property:
+          type: string
+          description: Field name that will be used to sort
+          nullable: true
+        Direction:
+          type: string
+          description: The direction that should be applied. 'Asc' or 'Desc'
+          nullable: true
+          example: Asc
+    AdvancedConditionFieldCategory:
+      type: object
+      properties:
+        BasicFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConditionModuleAdvancedFieldValue'
+          nullable: true
+        AdvancedFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConditionModuleAdvancedFieldValue'
+          nullable: true
+    AdvancedConditionModule:
+      type: object
+      properties:
+        ModuleDisplayName:
+          type: string
+          nullable: true
+        FieldCategory:
+          $ref: '#/components/schemas/FieldCategory'
+        FieldCategoryDisplayName:
+          type: string
+          nullable: true
+        Fields:
+          $ref: '#/components/schemas/AdvancedConditionFieldCategory'
+    AssetAllocationDefinitionResponse:
+      type: object
+      properties:
+        RepartitionId:
+          type: integer
+          description: Unique identifier of the asset allocation (repartition) definition.
+          format: int64
+          nullable: true
+        LocalizedName:
+          type: string
+          description: Localized display name of the definition (culture-specific).
+          nullable: true
+        IsVisible:
+          type: boolean
+          description: Indicates whether this definition is visible to consumers (UI
+            / API clients).
+          nullable: true
+        IsReadonly:
+          type: boolean
+          description: Indicates whether this definition is read-only (cannot be modified).
+          nullable: true
+        PartyId:
+          type: integer
+          description: Identifier of the party (e.g., firm / entity) to which this
+            definition belongs.
+          format: int32
+          nullable: true
+        PartyDescription:
+          type: string
+          description: Human-readable description of the owning party.
+          nullable: true
+        OwnerId:
+          type: integer
+          description: Identifier of the owner (e.g., user / representative) who created
+            or manages this definition.
+          format: int32
+          nullable: true
+        Type:
+          type: integer
+          description: Type code of the asset allocation definition (application-specific
+            classification).
+          format: int32
+          nullable: true
+        SubClasses:
+          type: array
+          items:
+            $ref: '#/components/schemas/AssetAllocationNodeResponse'
+          description: Root level child nodes (asset class hierarchy) composing the
+            allocation tree.
+          nullable: true
+      description: Represents an asset allocation (repartition) definition.
+    AssetAllocationModel:
+      type: object
+      properties:
+        AssetAllocationId:
+          type: integer
+          description: The asset allocation ID.
+          format: int32
+        AssetAllocationType:
+          $ref: '#/components/schemas/AssetMixStructureType'
+      description: The asset allocation of the portfolio.
+    AssetAllocationNodeResponse:
+      type: object
+      properties:
+        ClassId:
+          type: integer
+          description: Asset class identifier associated to this node.
+          format: int64
+          nullable: true
+        ClassificationId:
+          type: integer
+          description: Identifier of the classification used for this node (repartition).
+          format: int32
+        RepNodeId:
+          type: integer
+          description: Parent repartition node identifier (null if root).
+          format: int32
+          nullable: true
+        DisplayOrder:
+          type: integer
+          description: Order to display the node.
+          format: int32
+        LocalizedName:
+          type: string
+          description: Localized name / description of the node.
+          nullable: true
+        SubClasses:
+          type: array
+          items:
+            $ref: '#/components/schemas/AssetAllocationNodeResponse'
+          description: Child nodes (sub asset classes / sub nodes).
+          nullable: true
+      description: Represents a node inside an asset allocation (repartition) or objective
+        tree.
+    AssetAllocationsSplitResponse:
+      type: object
+      properties:
+        Id:
+          type: integer
+          format: int64
+          nullable: true
+        AssetAllocations:
+          type: array
+          items:
+            $ref: '#/components/schemas/AssetAllocationDefinitionResponse'
+          description: List of asset allocations (repartitions) definitions.
+          nullable: true
+        InvestmentObjectives:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvestmentObjectiveDefinitionResponse'
+          description: List of investment objectives.
+          nullable: true
+      description: Response containing separated lists of asset allocations and investment
+        objectives.
+    AssetAllocationsSplitResponseStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          $ref: '#/components/schemas/AssetAllocationsSplitResponse'
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    AssetClassGroupModel:
+      required:
+      - ClassDescription
+      - ColorCode
+      type: object
+      properties:
+        AssetClassId:
+          type: integer
+          description: The id of the asset class.
+          format: int32
+        ClassDescription:
+          type: string
+          description: The Description of the Asset Class.
+          nullable: true
+        InvestedCapital:
+          type: number
+          description: The amount of capital invested in the asset class.
+          format: double
+        MarketValue:
+          type: number
+          description: The market value of the asset class.
+          format: double
+        MarketValuePercentage:
+          type: number
+          description: The percentage of the market value of the asset class.
+          format: double
+        InvestedCapitalGainLoss:
+          type: number
+          description: The capital gain or loss of the asset class.
+          format: double
+        AccruedInterestDividends:
+          type: number
+          description: The accrued interest dividends of the asset class.
+          format: double
+        AnnualIncome:
+          type: number
+          description: The annual income of the asset class.
+          format: double
+        BookValue:
+          type: number
+          description: The book value of the asset class.
+          format: double
+        BookValueGainLoss:
+          type: number
+          description: The capital gain or loss of the book value of the asset class.
+          format: double
+        ObjectiveMin:
+          type: number
+          description: The minimum objective of the asset class.
+          format: double
+          nullable: true
+        ObjectiveMax:
+          type: number
+          description: The maximum objective of the asset class.
+          format: double
+          nullable: true
+        ObjectiveTarget:
+          type: number
+          description: The target objective of the asset class.
+          format: double
+          nullable: true
+        ObjectiveRating:
+          $ref: '#/components/schemas/ObjectiveRating'
+        ColorCode:
+          type: string
+          description: The color code of the asset class.
+          nullable: true
+        Positions:
+          type: array
+          items:
+            $ref: '#/components/schemas/PositionDataModel'
+          description: The list of positions in the asset class.
+          nullable: true
+        PositionCount:
+          type: integer
+          description: The number of positions in the asset class.
+          format: int32
+          readOnly: true
+      description: The data for the asset class section of a portfolio.
+    AssetMixConditionFieldModel:
+      type: object
+      properties:
+        DisplayName:
+          type: string
+          description: Represents the display name of the asset mix condition field
+          nullable: true
+        PropertyName:
+          type: string
+          description: Represents the property name of the asset mix condition field
+          nullable: true
+        ModuleName:
+          type: string
+          description: Represents the module name of the asset mix condition field
+          nullable: true
+        AvailableModules:
+          type: array
+          items:
+            type: string
+          description: Represent the module each field is available for (AssetMixVarationField
+            and AsssetMixValueField)
+          nullable: true
+    AssetMixStructureType:
+      enum:
+      - Unknown
+      - Classification
+      - Repartition
+      - InvestmentObjective
+      - Sleeves
+      type: string
+    BoardType:
+      enum:
+      - Undefined
+      - UpcomingOptionExpiration
+      - UpcomingBondMaturity
+      - Anniversary
+      - RestrictedAccount
+      - UpperCashBalance
+      - LowerCashBalance
+      - UnsynchronizedAccount
+      - ExpiredOrder
+      - GenericCriteriaBased
+      - Schedule
+      - GenericBrowser
+      - Dashboard
+      - CallList
+      - CampaignManagement
+      - UnsynchronizedModel
+      - UnallocatedPositionSleeves
+      - ApparentLossAlertBoard
+      - SpecialDividends
+      - DriftingSleeve
+      type: string
+    BranchPatchRequestJsonPatchDocument:
+      title: BranchPatchRequest
+      type: array
+      items:
+        $ref: '#/components/schemas/PatchRequestOperation'
+      description: "Available operations.<ul>\r\n  <li>Name [ Replace ]</li>\r\n \
+        \ <li>LocalizedNames [ Replace ]</li>\r\n  <li>Phone1 [ Replace ]</li>\r\n\
+        \  <li>Phone2 [ Replace ]</li>\r\n  <li>Address [ Replace ]</li>\r\n  <li>Address2\
+        \ [ Replace ]</li>\r\n  <li>City [ Replace ]</li>\r\n  <li>Province [ Replace\
+        \ ]</li>\r\n  <li>Country [ Replace ]</li>\r\n  <li>ZipCode [ Replace ]</li>\r\
+        \n  <li>RegionId [ Replace ]</li>\r\n</ul>"
+    BranchResponse:
+      required:
+      - BranchId
+      - Name
+      - Number
+      type: object
+      properties:
+        BranchId:
+          type: integer
+          description: Identifiant de la branche
+          format: int32
+        Number:
+          type: string
+          description: Numéro de la succursale
+          nullable: true
+        Province:
+          type: string
+          description: Provunce dans laquelle se situe la branche
+          nullable: true
+        City:
+          type: string
+          description: Ville dans laquelle se situe la branche
+          nullable: true
+        Name:
+          type: string
+          description: Nom de la branche
+          nullable: true
+        FirmId:
+          type: integer
+          description: Représente la firme à laquelle la branche est rattachée
+          format: int64
+        LocalizedNames:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocalizedDescriptionResponse'
+          description: Les noms localisés de la succursale.
+          nullable: true
+        Phone1:
+          type: string
+          description: Premier numéro de téléphone.
+          nullable: true
+        Phone2:
+          type: string
+          description: Deuxième numéro de téléphone.
+          nullable: true
+        Address:
+          type: string
+          description: Première ligne d'adresse.
+          nullable: true
+        Address2:
+          type: string
+          description: Deuxième ligne d'adresse.
+          nullable: true
+        ZipCode:
+          type: string
+          description: Code postal.
+          nullable: true
+        Country:
+          type: string
+          description: Pays.
+          nullable: true
+        RegionId:
+          type: integer
+          description: Région à laquelle la succursale appartient.
+          format: int64
+        IsFirmDefault:
+          type: boolean
+          description: Indique si la succursale est celle par défaut de la firme.
+      description: Reponse contenant les informations nécessaires pour afficher une
+        branche
+    BranchResponseIEnumerableStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          type: array
+          items:
+            $ref: '#/components/schemas/BranchResponse'
+          description: The real response object/>
+          nullable: true
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    BranchResponseStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          $ref: '#/components/schemas/BranchResponse'
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    ClassPatchRequestJsonPatchDocument:
+      title: ClassPatchRequest
+      type: array
+      items:
+        $ref: '#/components/schemas/PatchRequestOperation'
+      description: "Available operations.<ul>\r\n  <li>Id [  ]</li>\r\n  <li>LongNamesByCultureName\
+        \ [ Replace ]</li>\r\n  <li>ShortNamesByCultureName [ Replace ]</li>\r\n \
+        \ <li>Color [ Replace ]</li>\r\n  <li>ConditionContainer [ Replace ]</li>\r\
+        \n</ul>"
+    ClassResponse:
+      type: object
+      properties:
+        Id:
+          type: integer
+          description: The unique identifier of the class
+          format: int64
+          nullable: true
+        LocalizedName:
+          type: string
+          description: The localized long name of the class
+          nullable: true
+        LocalizedShortName:
+          type: string
+          description: The localized short name of the class
+          nullable: true
+        DisplayOrder:
+          type: integer
+          description: The display order of the class
+          format: int32
+        Other:
+          type: boolean
+          description: Indicates whether the class is other
+        StartDate:
+          type: string
+          description: The start date of the class
+          format: date-time
+        EndDate:
+          type: string
+          description: The end date of the class
+          format: date-time
+          nullable: true
+        Color:
+          type: integer
+          description: The color of the class
+          format: int32
+    ClassWithConditionResponse:
+      type: object
+      properties:
+        Id:
+          type: integer
+          description: The unique identifier of the class
+          format: int64
+          nullable: true
+        LocalizedName:
+          type: string
+          description: The localized long name of the class
+          nullable: true
+        LocalizedShortName:
+          type: string
+          description: The localized short name of the class
+          nullable: true
+        DisplayOrder:
+          type: integer
+          description: The display order of the class
+          format: int32
+        Other:
+          type: boolean
+          description: Indicates whether the class is other
+        StartDate:
+          type: string
+          description: The start date of the class
+          format: date-time
+        EndDate:
+          type: string
+          description: The end date of the class
+          format: date-time
+          nullable: true
+        Color:
+          type: integer
+          description: The color of the class
+          format: int32
+        ConditionContainer:
+          $ref: '#/components/schemas/ComplexCondition'
+    ClassWithConditionResponseStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          $ref: '#/components/schemas/ClassWithConditionResponse'
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    ClassificationResponse:
+      type: object
+      properties:
+        Id:
+          type: integer
+          description: The unique identifier of the classification
+          format: int64
+          nullable: true
+        LocalizedName:
+          type: string
+          description: The localized name of the classification
+          nullable: true
+        Type:
+          type: integer
+          description: The type of the classification
+          format: int32
+        PartyId:
+          type: integer
+          description: The party level of the classification
+          format: int32
+        PartyDescription:
+          type: string
+          description: The party description of the classification
+          nullable: true
+        OwnerId:
+          type: integer
+          description: The owner number of the classification
+          format: int32
+        IsReadOnly:
+          type: boolean
+          description: The read only status of the classification
+        IsVisible:
+          type: boolean
+          description: The visibility of the classification
+        Classes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClassResponse'
+          nullable: true
+      description: Classification response
+    ClassificationResponseIEnumerableStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClassificationResponse'
+          description: The real response object/>
+          nullable: true
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    ClassificationType:
+      enum:
+      - AssetMix
+      - Billing
+      - IndustryCode
+      - RiskIndex
+      type: string
+    ClientSleevesProcessDateInfo:
+      type: object
+      properties:
+        Global:
+          $ref: '#/components/schemas/ProcessDateInfo'
+        Sleeves:
+          $ref: '#/components/schemas/ProcessDateInfo'
+        Positions:
+          $ref: '#/components/schemas/ProcessDateInfo'
+        Valid:
+          type: boolean
+          description: Whether the dates are valid.
+      description: Represents a response for client sleeves process dates.
+    ClientsPadResponseSortingRuleModel:
+      type: object
+      properties:
+        Property:
+          type: string
+          description: Field name that will be used to sort
+          nullable: true
+        Direction:
+          type: string
+          description: The direction that should be applied. 'Asc' or 'Desc'
+          nullable: true
+          example: Asc
+    ColumnRequest:
+      type: object
+      properties:
+        Name:
+          type: string
+          description: Gets or sets the name of the column.
+          nullable: true
+        DisplayName:
+          type: string
+          description: Gets or sets the display name of the column.
+          nullable: true
+      description: Represents a request for a column to be exported.
+    ComplexCondition:
+      type: object
+      properties:
+        ConditionConnector:
+          type: string
+          description: Gets or sets the connector type (AND/OR) used to join this
+            condition with others at the same level.
+          nullable: true
+        ModuleNestpoint:
+          type: string
+          description: Gets or sets the module nest point identifier, used for grouping
+            conditions hierarchically.
+          nullable: true
+        ComplexConditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComplexCondition'
+          description: Gets or sets the list of child complex conditions that belong
+            to this criteria.
+          nullable: true
+        SimpleCondition:
+          $ref: '#/components/schemas/SimpleCondition'
+      description: Represents a condition container of conditions
+    ConditionContainerResponse:
+      type: object
+      properties:
+        Id:
+          type: integer
+          description: The unique identifier of the container.
+          format: int64
+          nullable: true
+        ContainerDefinitionId:
+          type: integer
+          description: The identifiers of the conditions for the condtition container
+          format: int32
+        ConditionContainer:
+          $ref: '#/components/schemas/ComplexCondition'
+      description: Condition container response
+    ConditionContainerResponseStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          $ref: '#/components/schemas/ConditionContainerResponse'
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    ConditionModuleAdvancedFieldValue:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Represents the id of the field
+          nullable: true
+        DisplayName:
+          type: string
+          description: Represents the display name of the field
+          nullable: true
+        DomainType:
+          type: string
+          description: Represents the domain type of the field
+          nullable: true
+        ModelType:
+          type: string
+          description: Represents the type of the field
+          nullable: true
+        Unit:
+          $ref: '#/components/schemas/ConditionResponseValue'
+        MinValue:
+          type: number
+          description: Represents the minimum value of the field if the field is a
+            numerical one
+          format: double
+        MaxValue:
+          type: number
+          description: Represents the maximum value of the field if the field is a
+            numerical one
+          format: double
+        MinDate:
+          type: string
+          description: Represents the minimum date of the field if the field is a
+            date one
+          format: date-time
+        MaxDate:
+          type: string
+          description: Represents the maximum date of the field if the field is a
+            date one
+          format: date-time
+        Precision:
+          type: integer
+          description: Represents the precision of the field if the field is a numerical
+            one
+          format: int32
+          nullable: true
+        CanHaveFieldAsValue:
+          type: boolean
+          description: Represents if the field can be used as a value
+        Operators:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConditionResponseValue'
+          description: List of all the operators that can be used on the field
+          nullable: true
+        Values:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConditionResponseValue'
+          description: Represents the values of the field
+          nullable: true
+      description: Represents a condition module field value with template information
+    ConditionResponseValue:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Represents the id of the field
+          nullable: true
+        DisplayName:
+          type: string
+          description: Represents the display name of the field
+          nullable: true
+        CriteriaGeneratorId:
+          $ref: '#/components/schemas/CriteriaGenerator'
+      description: Represents a condition response value with optional template information
+    ConfigurationResponse:
+      type: object
+      properties:
+        Key:
+          type: string
+          description: The configuration key name.
+          nullable: true
+        Value:
+          type: string
+          description: The configuration value as a string.
+          nullable: true
+        Group:
+          type: string
+          description: The group this configuration belongs to. Optional.
+          nullable: true
+    ConfigurationResponseListStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConfigurationResponse'
+          description: The real response object/>
+          nullable: true
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    CreateBranchRequest:
+      required:
+      - Name
+      - RegionId
+      type: object
+      properties:
+        RegionId:
+          type: integer
+          description: The region the branch belongs to.
+          format: int64
+        Name:
+          type: string
+          description: The branch name.
+          nullable: true
+        Number:
+          type: string
+          description: The branch number. Generated when omitted.
+          nullable: true
+        LocalizedNames:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocalizedDescriptionRequest'
+          description: The localized names of the branch.
+          nullable: true
+        Phone1:
+          type: string
+          description: First phone number.
+          nullable: true
+        Phone2:
+          type: string
+          description: Second phone number.
+          nullable: true
+        Address:
+          type: string
+          description: First address line.
+          nullable: true
+        Address2:
+          type: string
+          description: Second address line.
+          nullable: true
+        City:
+          type: string
+          description: City.
+          nullable: true
+        Province:
+          type: string
+          description: Province.
+          nullable: true
+        Country:
+          type: string
+          description: Country.
+          nullable: true
+        ZipCode:
+          type: string
+          description: Postal / zip code.
+          nullable: true
+      description: Request to create a branch. The branch's firm is derived from the
+        region.
+    CreateRegionRequest:
+      required:
+      - FirmId
+      - LocalizedNames
+      type: object
+      properties:
+        FirmId:
+          type: integer
+          description: The identifier of the firm the region belongs to.
+          format: int64
+        LocalizedNames:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocalizedDescriptionRequest'
+          description: The localized names of the region. At least one is required.
+          nullable: true
+      description: Request to create a region.
+    CriteriaGenerator:
+      enum:
+      - Generic
+      - PastHeldSecurity
+      - ReturnOnInvestment
+      - RealizedGainLoss
+      type: string
+    Cultures:
+      enum:
+      - French
+      - English
+      type: string
+      description: Represents the cultures available for user configuration.
+    CurrencyBusinessRulesModel:
+      type: object
+      properties:
+        RequestedCurrency:
+          type: string
+          description: "The information requested will be converted to this currency.\r\
+            \n</br>\r\n</br>\r\nThe list of supported currencies follow the International\
+            \ Standard for currency\r\ncodes (ISO 4217).\r\n</br>\r\n</br> The values\
+            \ must be provided in upper case.\r\n\r\n</br> If not provided, each entities\
+            \ will be returned using their \r\nown currency."
+          nullable: true
+          example: USD
+    DecimalValue:
+      type: object
+      properties:
+        RawValue:
+          type: number
+          format: double
+          nullable: true
+        DecimalPrecision:
+          type: integer
+          format: int32
+        ValueContext:
+          $ref: '#/components/schemas/DecimalValueContext'
+    DecimalValueContext:
+      enum:
+      - AsIs
+      - NotAvailable
+      type: string
+    DictionaryEntryResponse:
+      type: object
+      properties:
+        Index:
+          type: integer
+          description: The index of the entry; dictionary-typed preference values
+            store this index.
+          format: int64
+        Descriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocalizedDescriptionResponse'
+          description: The localized descriptions of the entry, keyed by ISO 639-1
+            language code (e.g. fr, en).
+          nullable: true
+      description: A valid value of a dictionary-typed preference.
+    DictionaryValue:
+      type: object
+      properties:
+        DictionaryId:
+          type: integer
+          format: int32
+        EntryIndex:
+          type: integer
+          format: int32
+          nullable: true
+        Mnemonic:
+          type: string
+          nullable: true
+        Description:
+          type: string
+          nullable: true
+    DictionaryValueListStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          type: array
+          items:
+            $ref: '#/components/schemas/DictionaryValue'
+          description: The real response object/>
+          nullable: true
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    DiscretionaryAccountResponse:
+      required:
+      - AccountNumber
+      - Currency
+      type: object
+      properties:
+        Currency:
+          type: string
+          description: The ISO 4217 currency code.
+          nullable: true
+        AccountNumber:
+          type: string
+          description: The account number.
+          nullable: true
+      description: A discretionary (GDO average-cost) account of a firm.
+    DiscretionaryFilter:
+      enum:
+      - All
+      - Discretionary
+      - NonDiscretionary
+      type: string
+    DocumentContextDirectories:
+      required:
+      - ContextName
+      - Directories
+      type: object
+      properties:
+        ContextType:
+          $ref: '#/components/schemas/DocumentType'
+        ContextId:
+          type: integer
+          description: "The context id (relationship id or client id) — pass this\
+            \ back to the filtered documents\r\nendpoint to fetch this node's documents.\
+            \ Null for the personal context."
+          format: int32
+          nullable: true
+        ContextName:
+          type: string
+          description: "The display name of the context (relationship short name,\
+            \ client name, model account name,\r\nor the logged-in user's name for\
+            \ the personal context)."
+          nullable: true
+        Directories:
+          type: array
+          items:
+            $ref: '#/components/schemas/DocumentDirectoryEntry'
+          description: The distinct folders for this context. Empty when the context
+            has no documents.
+          nullable: true
+      description: The directories for a single context node (the main context or
+        one of its associated contexts).
+    DocumentDirectoriesResponse:
+      required:
+      - AssociatedContexts
+      - Context
+      type: object
+      properties:
+        Context:
+          $ref: '#/components/schemas/DocumentContextDirectories'
+        AssociatedContexts:
+          type: array
+          items:
+            $ref: '#/components/schemas/DocumentContextDirectories'
+          description: "The associated contexts and their directories — a relationship's\
+            \ primary-root clients, or a\r\nclient's associated relationships. Empty\
+            \ for Models and Personal contexts."
+          nullable: true
+      description: "The document directory structure for a requested context, split\
+        \ into the context's own\r\ndirectories (CrmApplicationService.Core.Contracts.V1.Responses.Documents.DocumentDirectoriesResponse.Context)\
+        \ and those of its associated contexts\r\n(CrmApplicationService.Core.Contracts.V1.Responses.Documents.DocumentDirectoriesResponse.AssociatedContexts)\
+        \ — a relationship's clients, or a client's relationships.\r\nFolder structure\
+        \ only; documents are fetched per folder via the filtered documents endpoint."
+    DocumentDirectoriesResponseStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          $ref: '#/components/schemas/DocumentDirectoriesResponse'
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    DocumentDirectoryEntry:
+      required:
+      - Path
+      type: object
+      properties:
+        Path:
+          type: string
+          description: The stored folder path. An empty string represents the context
+            root.
+          nullable: true
+        DocumentCount:
+          type: integer
+          description: The number of documents whose path equals CrmApplicationService.Core.Contracts.V1.Responses.Documents.DocumentDirectoryEntry.Path
+            exactly (not a subtree rollup).
+          format: int32
+      description: A single folder within a context and the number of documents filed
+        directly in it.
+    DocumentPatchRequestJsonPatchDocument:
+      title: DocumentPatchRequest
+      type: array
+      items:
+        $ref: '#/components/schemas/PatchRequestOperation'
+      description: "Available operations.<ul>\r\n  <li>Comment [ Replace ]</li>\r\n\
+        \  <li>Path [ Replace ]</li>\r\n</ul>"
+    DocumentResponse:
+      type: object
+      properties:
+        DocumentId:
+          type: integer
+          format: int64
+          nullable: true
+        ContextId:
+          type: integer
+          format: int32
+          nullable: true
+        FileType:
+          type: string
+          nullable: true
+        Name:
+          type: string
+          nullable: true
+        Extension:
+          type: string
+          nullable: true
+        Size:
+          type: integer
+          format: int64
+        ModifiedOn:
+          type: string
+          format: date-time
+          nullable: true
+        AccessedOn:
+          type: string
+          format: date-time
+          nullable: true
+        DateUploaded:
+          type: string
+          format: date-time
+          nullable: true
+        UploadedBy:
+          type: integer
+          format: int32
+        UploadedByName:
+          type: string
+          nullable: true
+        Path:
+          type: string
+          nullable: true
+        Comment:
+          type: string
+          nullable: true
+        IsExternal:
+          type: boolean
+    DocumentResponsePaging:
+      type: object
+      properties:
+        Items:
+          type: array
+          items:
+            $ref: '#/components/schemas/DocumentResponse'
+          nullable: true
+        PageLimit:
+          type: integer
+          format: int32
+        Next:
+          type: integer
+          format: int64
+        Previous:
+          type: integer
+          format: int64
+        NumberOfItems:
+          type: integer
+          format: int32
+          readOnly: true
+    DocumentResponsePagingStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          $ref: '#/components/schemas/DocumentResponsePaging'
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    DocumentResponseSortingRuleModel:
+      type: object
+      properties:
+        Property:
+          type: string
+          description: Field name that will be used to sort
+          nullable: true
+        Direction:
+          type: string
+          description: The direction that should be applied. 'Asc' or 'Desc'
+          nullable: true
+          example: Asc
+    DocumentResponseStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          $ref: '#/components/schemas/DocumentResponse'
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    DocumentTransferRequest:
+      required:
+      - TargetContextType
+      type: object
+      properties:
+        TargetContextType:
+          $ref: '#/components/schemas/DocumentType'
+        TargetContextId:
+          type: integer
+          description: "The context id of the target context the document reference\
+            \ will be copied or moved to.\r\nWhen the target context type is Personal,\
+            \ this field is optional and defaults to the current user's id."
+          format: int32
+          nullable: true
+        Comment:
+          type: string
+          description: The comment to be associated with the resulting reference.
+            When null, the source comment is preserved on move and left empty on copy.
+          nullable: true
+        Path:
+          type: string
+          description: The virtual path the resulting reference will be presented
+            under. When null, the source path is preserved on move and left empty
+            on copy.
+          nullable: true
+      description: A request to transfer a document reference into another context,
+        used by both copy and move operations.
+    DocumentType:
+      enum:
+      - Clients
+      - Relationships
+      - Personal
+      - Models
+      type: string
+      description: Should match Croesus.BusinessLogic.BusinessObjects.ContentManagementObjects.KeyType
+        values
+    EnumValue:
+      type: object
+      properties:
+        Value:
+          type: integer
+          format: int32
+        Text:
+          type: string
+          nullable: true
+        DescriptionCurrentCulture:
+          type: string
+          nullable: true
+    Error:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          type: object
+          description: Aways null since its an error
+          format: Any object
+          nullable: true
+          readOnly: true
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: A list of message that contains any errors or warning that
+            should be addressed
+          nullable: true
+      description: Standard generic response for errors cases
+    ExportDashboardsBusinessRulesModel:
+      type: object
+      properties:
+        BoardType:
+          $ref: '#/components/schemas/BoardType'
+        TaskGroupId:
+          type: integer
+          format: int32
+        SelectedIds:
+          uniqueItems: true
+          type: array
+          items:
+            type: object
+            format: Any object
+          description: The selected ids for the export. If null or empty, all ids
+            will be exported.
+          nullable: true
+        SelectedColumnName:
+          type: string
+          description: The column name for the selected ids.
+          nullable: true
+    ExportDashboardsBusinessRulesModelGenericDashboardResponseFilteredBodyModel:
+      type: object
+      properties:
+        FilterRules:
+          type: string
+          nullable: true
+        SortingRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/GenericDashboardResponseSortingRuleModel'
+          nullable: true
+        BusinessRules:
+          $ref: '#/components/schemas/ExportDashboardsBusinessRulesModel'
+        Paging:
+          $ref: '#/components/schemas/PaginationModelWithBody'
+    ExportPositionBusinessRulesModel:
+      required:
+      - GroupType
+      - Ids
+      - PortfolioType
+      type: object
+      properties:
+        Ids:
+          uniqueItems: true
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: The requested portfolio context ids.
+          nullable: true
+        PortfolioType:
+          type: string
+          description: The requested portfolio context type.
+          nullable: true
+        GroupType:
+          type: string
+          nullable: true
+        AssetClassId:
+          type: integer
+          format: int32
+          nullable: true
+        IncludeZeroPositions:
+          type: boolean
+        IncludeFundAllocation:
+          type: boolean
+        IncludeIntradayData:
+          type: boolean
+        IncludeRiskRatingData:
+          type: boolean
+        PortfolioDate:
+          type: string
+          description: The earliest date to retrieve data for the portfolio.
+          format: date-time
+          nullable: true
+        Currency:
+          type: string
+          description: The requested currency for the portfolio.
+          nullable: true
+        SelectedIds:
+          uniqueItems: true
+          type: array
+          items:
+            type: integer
+            format: int64
+          description: The selected ids for the export. If null or empty, all ids
+            will be exported.
+          nullable: true
+    ExportPositionBusinessRulesModelPortfolioPositionsResponseFilteredBodyModel:
+      type: object
+      properties:
+        FilterRules:
+          type: string
+          nullable: true
+        SortingRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/PortfolioPositionsResponseSortingRuleModel'
+          nullable: true
+        BusinessRules:
+          $ref: '#/components/schemas/ExportPositionBusinessRulesModel'
+        Paging:
+          $ref: '#/components/schemas/PaginationModelWithBody'
+    ExportPositionPerformancesBusinessRulesModel:
+      type: object
+      properties:
+        SourceList:
+          type: array
+          items:
+            type: integer
+            format: int64
+          description: List of client/account/relationship... to get the performance.
+          nullable: true
+        EndDate:
+          type: string
+          description: End date of the performance.
+          format: date-time
+        Currency:
+          type: string
+          description: Currency of the performance.
+          nullable: true
+        SinceInception:
+          type: boolean
+          description: Flag to get the performance since inception.
+        Contribution:
+          type: boolean
+          description: "Flag to get the contribution.\r\nIf set to true, only contribution\
+            \ will be calculated."
+        PeriodType:
+          $ref: '#/components/schemas/PerformancePeriodType'
+        SourceType:
+          $ref: '#/components/schemas/SourceListType'
+        CustomPeriods:
+          type: array
+          items:
+            $ref: '#/components/schemas/PerformanceDates'
+          description: List of custom dates to get the performance.
+          nullable: true
+        CumulativePeriods:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: "List of cumulative period to get the performance.\r\nThe period\
+            \ represent months : 3, 6, 9 etc..."
+          nullable: true
+        FixedPeriods:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: "List of fixed periods to get the performance.\r\nThe period\
+            \ represent year : 2010, 2009, 2008 etc..."
+          nullable: true
+        AssetClassId:
+          type: integer
+          format: int32
+          nullable: true
+        AssetAllocationId:
+          type: integer
+          description: The asset allocation id to retrieve in the portfolio.
+          format: int32
+        AssetAllocationType:
+          type: string
+          description: The asset allocation type to retrieve in the portfolio.
+          nullable: true
+        IncludeFundAllocation:
+          type: boolean
+        IncludeZeroPositions:
+          type: boolean
+        GroupType:
+          type: string
+          nullable: true
+        IncludeRiskRatingData:
+          type: boolean
+        IncludeRiskRatingGraphData:
+          type: boolean
+        IncludeIntradayData:
+          type: boolean
+          nullable: true
+        IncludeProjectedIncome:
+          type: boolean
+        SelectedIds:
+          uniqueItems: true
+          type: array
+          items:
+            type: integer
+            format: int64
+          description: The selected ids for the export. If null or empty, all ids
+            will be exported.
+          nullable: true
+    ExportPositionPerformancesBusinessRulesModelPositionsPerformanceResponseFilteredBodyModel:
+      type: object
+      properties:
+        FilterRules:
+          type: string
+          nullable: true
+        SortingRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/PositionsPerformanceResponseSortingRuleModel'
+          nullable: true
+        BusinessRules:
+          $ref: '#/components/schemas/ExportPositionPerformancesBusinessRulesModel'
+        Paging:
+          $ref: '#/components/schemas/PaginationModelWithBody'
+    ExportProjectedIncomeBusinessRulesModel:
+      required:
+      - Ids
+      - PortfolioType
+      type: object
+      properties:
+        Ids:
+          uniqueItems: true
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: The requested portfolio context ids.
+          nullable: true
+        PortfolioType:
+          type: string
+          description: The requested portfolio context type.
+          nullable: true
+        IncludeZeroPositions:
+          type: boolean
+        IncludeRiskRatingData:
+          type: boolean
+        IncludeFundAllocation:
+          type: boolean
+        AsOfDate:
+          type: string
+          description: The earliest date to retrieve data for the portfolio.
+          format: date-time
+          nullable: true
+        RequestedCurrency:
+          type: string
+          description: The requested currency for the portfolio.
+          nullable: true
+        SelectedIds:
+          uniqueItems: true
+          type: array
+          items:
+            type: integer
+            format: int64
+          description: The selected ids for the export. If null or empty, all ids
+            will be exported.
+          nullable: true
+    ExportProjectedIncomeBusinessRulesModelObjectFilteredBodyModel:
+      type: object
+      properties:
+        FilterRules:
+          type: string
+          nullable: true
+        SortingRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/ObjectSortingRuleModel'
+          nullable: true
+        BusinessRules:
+          $ref: '#/components/schemas/ExportProjectedIncomeBusinessRulesModel'
+        Paging:
+          $ref: '#/components/schemas/PaginationModelWithBody'
+    ExportRequest:
+      required:
+      - Columns
+      type: object
+      properties:
+        Columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/ColumnRequest'
+          description: Gets or sets the list of columns to be included in the export.
+          nullable: true
+        Profiles:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProfileRequest'
+          description: Gets or sets the list of profile requests associated with the
+            export.
+          nullable: true
+        AccountsPadExportRequest:
+          $ref: '#/components/schemas/PadsBusinessRulesModelAccountsPadResponseFilteredBodyModel'
+        ClientsPadExportRequest:
+          $ref: '#/components/schemas/PadsBusinessRulesModelClientsPadResponseFilteredBodyModel'
+        RelationshipsPadExportRequest:
+          $ref: '#/components/schemas/PadsBusinessRulesModelRelationshipsPadResponseFilteredBodyModel'
+        SecuritiesPadExportRequest:
+          $ref: '#/components/schemas/PadsBusinessRulesModelSecuritiesPadResponseFilteredBodyModel'
+        TransactionsPadExportRequest:
+          $ref: '#/components/schemas/TransactionsPadsBusinessRulesModelTransactionsPadResponseFilteredBodyModel'
+        DashboardsPadExportRequest:
+          $ref: '#/components/schemas/ExportDashboardsBusinessRulesModelGenericDashboardResponseFilteredBodyModel'
+        ScheduleDashboardsPadExportRequest:
+          $ref: '#/components/schemas/ExportScheduleDashboardsBusinessRulesModelGenericDashboardResponseFilteredBodyModel'
+        SleevesPadExportRequest:
+          $ref: '#/components/schemas/PadsBusinessRulesModelSleevesPadRecordResponseFilteredBodyModel'
+        PositionsExportRequest:
+          $ref: '#/components/schemas/ExportPositionBusinessRulesModelPortfolioPositionsResponseFilteredBodyModel'
+        SimulationPositionsExportRequest:
+          $ref: '#/components/schemas/SimulationPositionExportBusinessRulesModelPositionDataModelFilteredBodyModel'
+        PositionPerformancesExportRequest:
+          $ref: '#/components/schemas/ExportPositionPerformancesBusinessRulesModelPositionsPerformanceResponseFilteredBodyModel'
+        ProjectedIncomeExportRequest:
+          $ref: '#/components/schemas/ExportProjectedIncomeBusinessRulesModelObjectFilteredBodyModel'
+      description: Represents a request to export data, including column definitions
+        and filter criteria.
+    ExportScheduleDashboardsBusinessRulesModel:
+      type: object
+      properties:
+        BoardType:
+          $ref: '#/components/schemas/BoardType'
+        TaskGroupId:
+          type: integer
+          format: int32
+          nullable: true
+        DateFrom:
+          type: string
+          format: date-time
+        DateTo:
+          type: string
+          format: date-time
+        SelectedIds:
+          uniqueItems: true
+          type: array
+          items:
+            type: object
+            format: Any object
+          description: The selected ids for the export. If null or empty, all ids
+            will be exported.
+          nullable: true
+        SelectedColumnName:
+          type: string
+          description: The column name for the selected ids.
+          nullable: true
+    ExportScheduleDashboardsBusinessRulesModelGenericDashboardResponseFilteredBodyModel:
+      type: object
+      properties:
+        FilterRules:
+          type: string
+          nullable: true
+        SortingRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/GenericDashboardResponseSortingRuleModel'
+          nullable: true
+        BusinessRules:
+          $ref: '#/components/schemas/ExportScheduleDashboardsBusinessRulesModel'
+        Paging:
+          $ref: '#/components/schemas/PaginationModelWithBody'
+    FeatureConfigCreateRequest:
+      required:
+      - FeatureName
+      type: object
+      properties:
+        FeatureName:
+          type: string
+          description: The name of the feature.
+          nullable: true
+        DisplayName:
+          type: string
+          description: The display name of the feature.
+          nullable: true
+        Config:
+          type: string
+          description: The configuration blob of the feature.
+          nullable: true
+        Version:
+          type: string
+          description: The version of the configuration.
+          nullable: true
+      description: Represents a request to create a feature configuration.
+    FieldCategory:
+      enum:
+      - Informative
+      - Date
+      - Calculation
+      - Model
+      - Profile
+      - AscCodes
+      - ExternalFields
+      - Performance
+      type: string
+    FilterOperatorEnum:
+      enum:
+      - None
+      - Different
+      - Equal
+      - Greater
+      - GreaterOrEqual
+      - Less
+      - LessOrEqual
+      - In
+      - Contains
+      - StartsWith
+      - EndsWith
+      - NotIn
+      - NotContains
+      - NotStartsWith
+      - NotEndsWith
+      - IsEmpty
+      - IsNotEmpty
+      - Between
+      - WithinTheLast
+      - WithinTheNext
+      - NotWithinTheLast
+      - NotWithinTheNext
+      type: string
+    FilterType:
+      enum:
+      - Branch
+      - Representative
+      - User
+      - Empty
+      type: string
+    FirmResponse:
+      required:
+      - FirmId
+      - LocalizedNames
+      - Mnemonic
+      type: object
+      properties:
+        FirmId:
+          type: integer
+          description: The firm identifier.
+          format: int64
+        Mnemonic:
+          type: string
+          description: The firm code.
+          nullable: true
+        LocalizedNames:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocalizedDescriptionResponse'
+          description: The localized names of the firm.
+          nullable: true
+        MobileFirmId:
+          type: string
+          description: The mobile application firm identifier (CFG_MOBILE_FIRMID preference).
+            Null when not set.
+          nullable: true
+        DiscretionaryAccounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/DiscretionaryAccountResponse'
+          description: The firm's discretionary (GDO average-cost) accounts, at most
+            one per currency.
+          nullable: true
+      description: A firm.
+    FirmResponseIEnumerableStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          type: array
+          items:
+            $ref: '#/components/schemas/FirmResponse'
+          description: The real response object/>
+          nullable: true
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    FirmResponseStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          $ref: '#/components/schemas/FirmResponse'
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    FiscalType:
+      enum:
+      - Unknown
+      - FirstSixtyDays
+      - RestOfYear
+      - CalendarYear
+      type: string
+    GenericDashboardResponseSortingRuleModel:
+      type: object
+      properties:
+        Property:
+          type: string
+          description: Field name that will be used to sort
+          nullable: true
+        Direction:
+          type: string
+          description: The direction that should be applied. 'Asc' or 'Desc'
+          nullable: true
+          example: Asc
+    GenericMessage:
+      type: object
+      properties:
+        Type:
+          $ref: '#/components/schemas/MessageType'
+        Code:
+          type: integer
+          format: int64
+          nullable: true
+        Message:
+          type: string
+          nullable: true
+        Source:
+          type: string
+          nullable: true
+    GenericResponseModel:
+      type: object
+      properties:
+        Time:
+          type: string
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          nullable: true
+        Response:
+          type: object
+          format: Any object
+          nullable: true
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/GenericMessage'
+          nullable: true
+    IncomePeriodModel:
+      required:
+      - Income
+      - Period
+      type: object
+      properties:
+        Period:
+          type: string
+          description: The period of the projected income represented in the format
+            "yyyy-MM" (e.g. "2025-01").
+          nullable: true
+        Income:
+          $ref: '#/components/schemas/DecimalValue'
+      description: The data model representing a period of projected income.
+    InvestmentObjectiveDefinitionResponse:
+      type: object
+      properties:
+        ObjectiveId:
+          type: integer
+          description: Unique investment objective identifier. Serialized as ObjectiveId.
+          format: int64
+          nullable: true
+        LocalizedName:
+          type: string
+          description: Localized display name of the investment objective (model name).
+          nullable: true
+        Mnemonic:
+          type: string
+          description: Mnemonic / short code used to reference the investment objective.
+          nullable: true
+        PartyId:
+          type: integer
+          description: Party identifier associated to the investment objective.
+          format: int32
+          nullable: true
+        ObjectivePartyLevel:
+          type: string
+          description: Party level (hierarchical level) for the objective party.
+          nullable: true
+        AssetAllocationId:
+          type: integer
+          description: Linked asset allocation (repartition) identifier when the objective
+            references a model.
+          format: int32
+          nullable: true
+        AssetAllocationName:
+          type: string
+          description: Linked asset allocation (model) name.
+          nullable: true
+        AssetAllocationPartyLevel:
+          type: string
+          description: Party level (hierarchical level) of the linked asset allocation
+            party.
+          nullable: true
+        AutoMinMax:
+          type: number
+          description: Automatic min/max increment value applied to objective class
+            percentages.
+          format: double
+          nullable: true
+        Type:
+          type: integer
+          description: Objective type identifier (domain specific classification).
+          format: int32
+          nullable: true
+        IsReadOnly:
+          type: boolean
+          description: Indicates whether the investment objective is read-only.
+          nullable: true
+        SubClasses:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvestmentObjectiveNodeResponse'
+          description: Hierarchical list of class nodes composing the investment objective.
+          nullable: true
+      description: Represents an investment objective definition.
+    InvestmentObjectiveModel:
+      type: object
+      properties:
+        Id:
+          type: integer
+          description: Investment Objective ID.
+          format: int32
+        Name:
+          type: string
+          description: Investment Objective Name.
+          nullable: true
+      description: The investment objective of the portfolio.
+    InvestmentObjectiveNodeResponse:
+      type: object
+      properties:
+        ClassId:
+          type: integer
+          description: Asset class identifier associated to this node.
+          format: int32
+        RepNodeId:
+          type: integer
+          description: Parent repartition node identifier (null if root).
+          format: int32
+          nullable: true
+        DisplayOrder:
+          type: integer
+          description: Order to display the node.
+          format: int32
+        LocalizedName:
+          type: string
+          description: Localized name / description of the node.
+          nullable: true
+        TargetPercent:
+          type: number
+          description: Target percentage for this node.
+          format: double
+        MinPercent:
+          type: number
+          description: Minimum percentage for this node.
+          format: double
+        MaxPercent:
+          type: number
+          description: Maximum percentage for this node.
+          format: double
+        AutoMinMax:
+          type: number
+          description: Automatic Min Max for this node
+          format: double
+        SubClasses:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvestmentObjectiveNodeResponse'
+          description: Child nodes (sub asset classes / sub nodes).
+          nullable: true
+      description: Represents a node inside an asset allocation (repartition) or objective
+        tree.
+    LocalizedDescriptionRequest:
+      required:
+      - Description
+      - Language
+      type: object
+      properties:
+        Language:
+          type: string
+          description: "The language of the description. Full culture names (\"fr-CA\"\
+            , \"en-CA\")\r\nare canonical; the two-letter forms (\"fr\", \"en\") are\
+            \ also accepted."
+          nullable: true
+        Description:
+          type: string
+          description: The description in that language.
+          nullable: true
+      description: A localized description.
+    LocalizedDescriptionResponse:
+      required:
+      - Description
+      - Language
+      type: object
+      properties:
+        Language:
+          type: string
+          description: The ISO 639-1 language code of the description (e.g. fr, en).
+          nullable: true
+        Description:
+          type: string
+          description: The description text.
+          nullable: true
+      description: A localized description of a resource.
+    MessageType:
+      enum:
+      - Unknown
+      - Information
+      - Error
+      - Warning
+      type: string
+    MetadataModel:
+      type: object
+      properties:
+        AssetAllocation:
+          $ref: '#/components/schemas/AssetAllocationModel'
+        HasIntraday:
+          type: boolean
+          description: Returns true if portfolio has intraday data applied.
+        CanIntraday:
+          type: boolean
+          description: Returns true if the button Intraday is visible.
+        GroupByBasketVisible:
+          type: boolean
+          description: The value of the GroupByBasketVisible flag. Returns true if
+            the option to group by basket is visible.
+        RequestedCurrency:
+          type: string
+          description: The Requested Currency.
+          nullable: true
+        DefaultCurrency:
+          type: string
+          description: The default currency of the portfolio.
+          nullable: true
+        RequestedDate:
+          type: string
+          description: The Requested Date.
+          format: date-time
+          nullable: true
+        PositionCount:
+          type: integer
+          description: The number of positions in the portfolio.
+          format: int32
+        AccountCount:
+          type: integer
+          description: The number of accounts in the portfolio.
+          format: int32
+        ActualDate:
+          type: string
+          description: The Actual Date used for the portfolio.
+          format: date-time
+        ActualGroupType:
+          $ref: '#/components/schemas/PortfolioGroupType'
+        AvailableGroupings:
+          type: array
+          items:
+            $ref: '#/components/schemas/PortfolioGroupType'
+          description: List of available groupings for the portfolio.
+          nullable: true
+        PortfolioDataType:
+          $ref: '#/components/schemas/PortfolioDataType'
+        IsModelBasket:
+          type: boolean
+          description: Indicates if the portfolio is a basket model.
+        HasFundAllocation:
+          type: boolean
+          description: Indicates if the portfolio has fund allocation data.
+        CanHaveFundAllocation:
+          type: boolean
+          description: Indicates if the portfolio can have fund allocation data.
+        HasSleeves:
+          type: boolean
+          description: Indicates if the portfolio has UMA account.
+        ModelId:
+          type: integer
+          description: The id of the model assigned to the portfolio's account, if
+            any.
+          format: int32
+          nullable: true
+        PortfolioMinDate:
+          type: string
+          description: Define the minimum date available in the portfolio for as-of-date
+            validation
+          format: date-time
+        CanCreateSleeves:
+          type: boolean
+          description: Indicates if we should be able to create sleeves from asset
+            classes
+      description: The Metadata of a portfolio.
+    ModuleConditionsResponse:
+      type: object
+      properties:
+        ModuleConditions:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/AdvancedConditionModule'
+          description: Represents the conditions associated to each Module
+          nullable: true
+        ConnectorDisplayName:
+          type: object
+          additionalProperties:
+            type: string
+          description: Represents the display names of the connectors used in the
+            conditions
+          nullable: true
+        MathTypeDisplayName:
+          type: object
+          additionalProperties:
+            type: string
+          description: Represents the display names of available math types
+          nullable: true
+        MathTypeOperators:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ConditionResponseValue'
+          description: Represents the operators of available math types
+          nullable: true
+        AssetMixFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/AssetMixConditionFieldModel'
+          description: Represents the asset mix fields
+          nullable: true
+    MyDocumentsBusinessRulesModel:
+      type: object
+    MyDocumentsBusinessRulesModelDocumentResponseFilteredBodyModel:
+      type: object
+      properties:
+        FilterRules:
+          type: string
+          nullable: true
+        SortingRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/DocumentResponseSortingRuleModel'
+          nullable: true
+        BusinessRules:
+          $ref: '#/components/schemas/MyDocumentsBusinessRulesModel'
+        Paging:
+          $ref: '#/components/schemas/PaginationModelWithBody'
+    ObjectScimListResponse:
+      type: object
+      properties:
+        schemas:
+          type: array
+          items:
+            type: string
+          description: The SCIM schemas used in this list response.
+          nullable: true
+          example:
+          - urn:ietf:params:scim:schemas:core:2.0:User
+        totalResults:
+          type: integer
+          description: The total number of resources matching the query, regardless
+            of pagination.
+          format: int32
+        startIndex:
+          type: integer
+          description: The 1-based index of the first result in the current set of
+            results.
+          format: int64
+        itemsPerPage:
+          type: integer
+          description: The number of resources returned in this response.
+          format: int32
+        Resources:
+          type: array
+          items:
+            type: object
+            format: Any object
+          description: A multi-valued list of resources matching the query.
+          nullable: true
+      description: "Represents a paginated list of SCIM resources as defined in RFC\
+        \ 7644 Section 3.4.2.\r\nUsed for returning multiple resources in query and\
+        \ search responses."
+    ObjectSortingRuleModel:
+      type: object
+      properties:
+        Property:
+          type: string
+          description: Field name that will be used to sort
+          nullable: true
+        Direction:
+          type: string
+          description: The direction that should be applied. 'Asc' or 'Desc'
+          nullable: true
+          example: Asc
+    ObjectStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          type: object
+          description: The real response object/>
+          format: Any object
+          nullable: true
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    ObjectiveRating:
+      enum:
+      - Upper
+      - Lower
+      - OnTarget
+      type: string
+      description: The different objective ratings.
+    PadsBusinessRulesModel:
+      type: object
+      properties:
+        CriteriaId:
+          type: integer
+          description: "The information requested will apply the criteria if a snapshot\
+            \ of this criteria exist.\r\n</br>\r\nIf none specified, all items will\
+            \ be returned with the paging configuration."
+          format: int32
+          nullable: true
+        IsCriteriaSelected:
+          type: boolean
+          nullable: true
+        CurrencyData:
+          $ref: '#/components/schemas/CurrencyBusinessRulesModel'
+        RequestedCurrency:
+          type: string
+          nullable: true
+          readOnly: true
+        QuickfilterIds:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: "The information requested will apply the quickFilters.\r\n\
+            </br>\r\nIf none specified, all items will be returned with the paging\
+            \ configuration."
+          nullable: true
+        ProfileIds:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: List of profiles to return along with the standard information.
+          nullable: true
+        QuickfilterConditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuickfilterConditionModel'
+          description: List of quickfilter conditions
+          nullable: true
+        SourceIds:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: "List of source ids. \r\n</br>\r\nThe list of records will\
+            \ be filtered to only contain records holding or linked to at least one\
+            \ of the designated source ids(Account, Client, Relationship or Security).\r\
+            \n\r\n</br>The sourceType parameter is required for it to work.\r\n\r\n\
+            </br>By default, a maximum of 50 ids can be included."
+          nullable: true
+        SourceType:
+          $ref: '#/components/schemas/SourceContextType'
+    PadsBusinessRulesModelAccountsPadResponseFilteredBodyModel:
+      type: object
+      properties:
+        FilterRules:
+          type: string
+          nullable: true
+        SortingRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountsPadResponseSortingRuleModel'
+          nullable: true
+        BusinessRules:
+          $ref: '#/components/schemas/PadsBusinessRulesModel'
+        Paging:
+          $ref: '#/components/schemas/PaginationModelWithBody'
+    PadsBusinessRulesModelClientsPadResponseFilteredBodyModel:
+      type: object
+      properties:
+        FilterRules:
+          type: string
+          nullable: true
+        SortingRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClientsPadResponseSortingRuleModel'
+          nullable: true
+        BusinessRules:
+          $ref: '#/components/schemas/PadsBusinessRulesModel'
+        Paging:
+          $ref: '#/components/schemas/PaginationModelWithBody'
+    PadsBusinessRulesModelRelationshipsPadResponseFilteredBodyModel:
+      type: object
+      properties:
+        FilterRules:
+          type: string
+          nullable: true
+        SortingRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/RelationshipsPadResponseSortingRuleModel'
+          nullable: true
+        BusinessRules:
+          $ref: '#/components/schemas/PadsBusinessRulesModel'
+        Paging:
+          $ref: '#/components/schemas/PaginationModelWithBody'
+    PadsBusinessRulesModelSecuritiesPadResponseFilteredBodyModel:
+      type: object
+      properties:
+        FilterRules:
+          type: string
+          nullable: true
+        SortingRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/SecuritiesPadResponseSortingRuleModel'
+          nullable: true
+        BusinessRules:
+          $ref: '#/components/schemas/PadsBusinessRulesModel'
+        Paging:
+          $ref: '#/components/schemas/PaginationModelWithBody'
+    PadsBusinessRulesModelSleevesPadRecordResponseFilteredBodyModel:
+      type: object
+      properties:
+        FilterRules:
+          type: string
+          nullable: true
+        SortingRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/SleevesPadRecordResponseSortingRuleModel'
+          nullable: true
+        BusinessRules:
+          $ref: '#/components/schemas/PadsBusinessRulesModel'
+        Paging:
+          $ref: '#/components/schemas/PaginationModelWithBody'
+    PaginationModelWithBody:
+      type: object
+      properties:
+        After:
+          type: integer
+          description: "The item id of the first item to be returned in the page when\
+            \ moving forward. \\\r\nGet this value from the field *Next* of your response"
+          format: int64
+          nullable: true
+        Before:
+          type: integer
+          description: "The item id of the last item to be returned in the page when\
+            \ moving backwards. \\\r\nGet this value from the field *Previous* of\
+            \ your response"
+          format: int64
+          nullable: true
+        PageLimit:
+          type: integer
+          description: The maximun number of items a page should return
+          format: int32
+      description: Represents a paging requested by the user in an API call
+    PatchRequestOperation:
+      type: object
+      properties:
+        op:
+          type: string
+          description: Operation to apply on the property.
+          example: replace
+        value:
+          type: object
+          description: The new value of the property to update. This value can be
+            a string, a dictionaryId, a date, a boolean, a numeric, etc.
+          example: 1
+        path:
+          type: string
+          description: Path of the property to update.
+          example: /Value
+      description: The list of patch operations.
+    PerformanceDates:
+      type: object
+      properties:
+        StartDate:
+          type: string
+          format: date-time
+          nullable: true
+        EndDate:
+          type: string
+          format: date-time
+          nullable: true
+        PeriodType:
+          $ref: '#/components/schemas/PerformancePeriodType'
+    PerformancePeriodType:
+      enum:
+      - Cumulative
+      - Fixed
+      - Specific
+      - Monthly
+      - Quarter
+      - Annual
+      type: string
+    PeriodModel:
+      type: object
+      properties:
+        PeriodStart:
+          type: string
+          description: Represents the start of the specified interval
+          format: date-time
+          nullable: true
+          example: '2009-07-18T00:00:00Z'
+        PeriodEnd:
+          type: string
+          description: Represents the end of the specified interval
+          format: date-time
+          nullable: true
+          example: '2009-07-30T00:00:00Z'
+    PortfolioDataType:
+      enum:
+      - AssetMixOnly
+      - PortfolioLite
+      - Model
+      - Simulation
+      - Sleeve
+      - StandardPortfolio
+      - IntradayPortfolio
+      - ProjectedPortfolio
+      - Basket
+      type: string
+      description: The data type of a portfolio.
+    PortfolioGroupType:
+      enum:
+      - None
+      - BySecurity
+      - ByAssetClass
+      - ByBasket
+      - BySleeve
+      type: string
+      description: The grouping type of a portfolio.
+    PortfolioPositionsResponseSortingRuleModel:
+      type: object
+      properties:
+        Property:
+          type: string
+          description: Field name that will be used to sort
+          nullable: true
+        Direction:
+          type: string
+          description: The direction that should be applied. 'Asc' or 'Desc'
+          nullable: true
+          example: Asc
+    PortfolioStateData:
+      type: object
+      properties:
+        Metadata:
+          $ref: '#/components/schemas/MetadataModel'
+        Summary:
+          $ref: '#/components/schemas/SummaryModel'
+        ProjectedIncomeSummary:
+          $ref: '#/components/schemas/ProjectedIncomeModel'
+        TradeDateBalance:
+          $ref: '#/components/schemas/TradeDateBalanceModel'
+        AssetClassGroups:
+          type: array
+          items:
+            $ref: '#/components/schemas/AssetClassGroupModel'
+          description: The asset class groups of the portfolio.
+          nullable: true
+        UngroupedPositions:
+          type: array
+          items:
+            $ref: '#/components/schemas/PositionDataModel'
+          description: The ungrouped positions of the portfolio.
+          nullable: true
+        Securities:
+          type: array
+          items:
+            $ref: '#/components/schemas/PositionSecurityModel'
+          description: The securities of the positions in the portfolio.
+          nullable: true
+        RiskRatingData:
+          $ref: '#/components/schemas/RiskRatingDataModel'
+      description: DTO representing the PortfolioState from BusinessLogic with visualization
+        data.
+    PositionAssetAllocationModel:
+      type: object
+      properties:
+        Id:
+          type: integer
+          description: The id of the asset allocation.
+          format: int32
+        Percentage:
+          type: number
+          description: The percentage of the asset allocation.
+          format: double
+      description: The asset allocation data for the positions of a portfolio.
+    PositionDataModel:
+      type: object
+      properties:
+        PositionId:
+          type: integer
+          description: The id of the position.
+          format: int64
+          nullable: true
+        ProjectedIncomeData:
+          $ref: '#/components/schemas/ProjectedIncomeModel'
+        AssetAllocationData:
+          type: array
+          items:
+            $ref: '#/components/schemas/PositionAssetAllocationModel'
+          description: The asset allocation data of the position.
+          nullable: true
+        SecurityId:
+          type: integer
+          description: The id of the security associated to the position.
+          format: int32
+        HasDepositWithdrawalAmount:
+          type: boolean
+          description: Flag indicating if the position has cash management.
+        HasNote:
+          type: boolean
+          description: Flag indicating if the position has notes.
+        Reconciled:
+          type: boolean
+          description: Flag indicating if the position is reconciled.
+        IACode:
+          type: string
+          description: The IA code associated to the position.
+          nullable: true
+        Quantity:
+          $ref: '#/components/schemas/DecimalValue'
+        QuantityVariation:
+          $ref: '#/components/schemas/DecimalValue'
+        PercentageVariation:
+          type: number
+          description: The percentage variation of the position (only relevant for
+            simulated portfolios).
+          format: double
+        AdjustedCostBase:
+          type: number
+          description: The adjusted cost base of the position.
+          format: double
+          nullable: true
+        BookValueACB:
+          type: number
+          description: The book value of type ACB of the position.
+          format: double
+          nullable: true
+        MarketValue:
+          type: number
+          description: The market value of the position.
+          format: double
+          nullable: true
+        TotalValuePercentageACB:
+          type: number
+          description: The total value percentage of the ACB of the position.
+          format: double
+          nullable: true
+        TotalValuePercentageInvestmentCost:
+          type: number
+          description: The total value percentage of the investment cost of the position.
+          format: double
+          nullable: true
+        TotalValuePercentageMarket:
+          type: number
+          description: The total value percentage of the market of the position.
+          format: double
+          nullable: true
+        GainLossACB:
+          type: number
+          description: The gain loss of type ACB of the position.
+          format: double
+          nullable: true
+        PercentGainLossACB:
+          type: number
+          description: The percentage of the gain loss of type ACB of the position.
+          format: double
+        CostYield:
+          type: number
+          description: The cost yield of the position.
+          format: double
+          nullable: true
+        MarketYield:
+          type: number
+          description: The market yield of the position.
+          format: double
+        CurrentYield:
+          type: number
+          description: The current yield of the position.
+          format: double
+          nullable: true
+        YieldToMaturityCostNominal:
+          type: number
+          description: The yield to maturity cost nominal of the position.
+          format: double
+          nullable: true
+        YieldToMaturityMarketNominal:
+          type: number
+          description: The yield to maturity market nominal of the position.
+          format: double
+          nullable: true
+        YieldToMaturityCostEffective:
+          type: number
+          description: The yield to maturity cost effective of the position.
+          format: double
+          nullable: true
+        YieldToMaturityMarketEffective:
+          type: number
+          description: The yield to maturity market effective of the position.
+          format: double
+          nullable: true
+        YieldToDateInvestmentCostNominal:
+          type: number
+          description: The yield to date of type Investment Cost nominal of the position.
+          format: double
+        YieldToDateInvestmentCostEffective:
+          type: number
+          description: The yield to date of type Investment Cost effective of the
+            position.
+          format: double
+        YieldToDateACBNominal:
+          type: number
+          description: The yield to date of type ACB nominal of the position.
+          format: double
+        YieldToDateACBEffective:
+          type: number
+          description: The yield to date of type ACB effective of the position.
+          format: double
+        AccountWeightedRate:
+          type: number
+          description: The account weighted rate of the position.
+          format: double
+          nullable: true
+        PriceRate:
+          type: number
+          description: The price rate of the position.
+          format: double
+        ModifiedDuration:
+          type: number
+          description: The modified duration of the position.
+          format: double
+          nullable: true
+        AccruedInterestDividend:
+          type: number
+          description: The accrued interest of the position.
+          format: double
+        CumulatedInterestDividendWithRevenueAccounts:
+          type: number
+          description: The accumulated interest of the position.
+          format: double
+        AnnualIncome:
+          type: number
+          description: The annual income of the position.
+          format: double
+        IsBlocked:
+          type: boolean
+          description: "Flag indicating if the position is blocked.\r\nNot exposed\
+            \ by the projected portfolio, which reports the directional lock through\
+            \ LockType instead."
+          nullable: true
+        IsBlockedSecurity:
+          type: boolean
+          description: Flag indicating if the position's security is blocked.
+          nullable: true
+        LockType:
+          $ref: '#/components/schemas/PositionLockType'
+        Tag:
+          type: string
+          description: The display style of IsBlocked.
+          nullable: true
+        Frequency:
+          type: number
+          description: The frequency of the position.
+          format: double
+        PercentGainLossInvestmentCost:
+          type: number
+          description: The percentage gain loss investment cost of the position.
+          format: double
+        GainLossInvestmentCost:
+          type: number
+          description: The gain loss investment cost of the position.
+          format: double
+          nullable: true
+        BookValueInvestmentCost:
+          type: number
+          description: The book value investment cost of the position.
+          format: double
+          nullable: true
+        InvestmentCost:
+          type: number
+          description: The investment cost of the position.
+          format: double
+          nullable: true
+        CumulatedCommission:
+          type: number
+          description: The cumulated commission of the position.
+          format: double
+        LastPurchaseDate:
+          type: string
+          description: The last purchase date of the position.
+          format: date-time
+          nullable: true
+        MaturityDate:
+          type: string
+          description: The maturity date of the position.
+          format: date-time
+          nullable: true
+        PriceCurrency:
+          type: string
+          description: The currency of the price
+          nullable: true
+        InterestPortion:
+          type: number
+          description: The interest portion of the position.
+          format: double
+          nullable: true
+        AccountCheckDigit:
+          type: string
+          description: The verification number of the account.
+          nullable: true
+        BookValueMarketValueIndicator:
+          type: boolean
+          description: "Flag indicating if the position value is set to the book value\
+            \ or the market value.\r\nWhen the indicator is set to `true`, the value\
+            \ is the market value and the book value has been replaced by the market\
+            \ value."
+        Beta:
+          type: number
+          description: The beta of the position.
+          format: double
+          nullable: true
+        HasPositionWarning:
+          type: boolean
+          description: Flag indicating if the position has a warning.
+        PositionWarning:
+          type: string
+          description: The warning message of the position.
+          nullable: true
+        RiskRating:
+          type: integer
+          description: The risk rating of the position.
+          format: int32
+          nullable: true
+        DefaultValuesIndicator:
+          type: boolean
+          description: Indicates whether default values are used for calculations.
+        TheoreticalPrice:
+          type: number
+          description: Theoretical Price.
+          format: double
+          nullable: true
+        TheoreticalValue:
+          type: number
+          description: Theoretical Value.
+          format: double
+          nullable: true
+        RiskRatingForDisplay:
+          type: string
+          description: Description of the positions's risk rating.
+          nullable: true
+        RQSRiskRatingDescription:
+          type: string
+          description: Description of the position's RQS risk rating.
+          nullable: true
+        GainLossRealizedFromOpenOrder:
+          type: number
+          description: "Realized gain and loss following the application or orders\
+            \ on the position.\r\nOnly for projected positions."
+          format: double
+          nullable: true
+        PercentGainLossRealizedFromOpenOrder:
+          type: number
+          description: "Realized percentage gain and loss following the application\
+            \ or orders on the position.\r\nOnly for projected positions."
+          format: double
+          nullable: true
+        GainLossUnrealizedFromOpenOrder:
+          type: number
+          description: "Unrealized gain and loss following the application or orders\
+            \ on the position.\r\nOnly for projected positions."
+          format: double
+          nullable: true
+        PercentGainLossUnrealizedFromOpenOrder:
+          type: number
+          description: "Unrealized percentage gain and loss following the application\
+            \ or orders on the position.\r\nOnly for projected positions."
+          format: double
+          nullable: true
+        OptionCost:
+          type: number
+          description: Represents de option cost if it exists.
+          format: double
+          nullable: true
+        OptionValue:
+          type: number
+          description: Represents the pending (residual) option value if it exists.
+          format: double
+          nullable: true
+        ExcludeProjectedIncome:
+          type: boolean
+          description: Indicates if the position is excluded from projected income.
+          nullable: true
+        ExcludeFromBillingPos:
+          type: boolean
+          description: Indicates if the position is excluded from billing.
+          nullable: true
+        OrderType:
+          $ref: '#/components/schemas/PositionOrderType'
+        IsBasket:
+          type: boolean
+          description: Indicates whether the position if of type basket.
+        DisplayFactor:
+          type: number
+          description: The display factor of the position
+          format: double
+        AccountClass:
+          $ref: '#/components/schemas/AccountClass'
+        IsAddedByUser:
+          type: boolean
+          description: "Indique si la position a été ajoutée manuellement par l'utilisateur\
+            \ dans la\r\nsimulation (par opposition à héritée d'un compte réel). Champ\
+            \ opaque de round-trip\r\npour les simulations (NEX-2635) : le client\
+            \ doit le renvoyer tel quel dans\r\nPortfolioState sans l'interpréter."
+        OpeningDate:
+          type: string
+          description: The opening date of the position.
+          format: date-time
+          nullable: true
+        TotalReturnACB:
+          type: number
+          description: The total return using the ACB book value method.
+          format: double
+          nullable: true
+        TotalReturnInvestmentCost:
+          type: number
+          description: The total return using the investment cost book value method.
+          format: double
+          nullable: true
+        TotalReturnPercentageACB:
+          type: number
+          description: The total return percentage using the ACB book value method.
+          format: double
+          nullable: true
+        TotalReturnPercentageInvestmentCost:
+          type: number
+          description: The total return percentage using the investment cost book
+            value method.
+          format: double
+          nullable: true
+        FXGainLossACB:
+          type: number
+          description: The unrealized foreign exchange gain or loss using the ACB
+            book value method.
+          format: double
+          nullable: true
+        FXGainLossInvestmentCost:
+          type: number
+          description: The unrealized foreign exchange gain or loss using the investment
+            cost book value method.
+          format: double
+          nullable: true
+        CapitalGainLossACB:
+          type: number
+          description: The unrealized capital gain or loss using the ACB book value
+            method.
+          format: double
+          nullable: true
+        CapitalGainLossInvestmentCost:
+          type: number
+          description: The unrealized capital gain or loss using the investment cost
+            book value method.
+          format: double
+          nullable: true
+        AccountId:
+          type: integer
+          description: The id of the account associated to the position.
+          format: int32
+        AccountName:
+          type: string
+          description: The name of the account associated to the position.
+          nullable: true
+        AccountNumber:
+          type: string
+          description: The number of the account associated to the position.
+          nullable: true
+        ParentNumber:
+          type: string
+          description: The parent account or client number of the sleeve associated
+            to the position.
+          nullable: true
+        AccountType:
+          type: string
+          description: The type of the account associated to the position.
+          nullable: true
+        AccountCurrency:
+          type: string
+          description: The currency of the account associated to the position.
+          nullable: true
+        ClientNumber:
+          type: string
+          description: The number of the client associated to the position.
+          nullable: true
+        ClientShortName:
+          type: string
+          description: The short name of the client associated to the position.
+          nullable: true
+        ClientPhoneNumber1:
+          type: string
+          description: The phone number 1 of the client associated to the position.
+          nullable: true
+        ClientPhoneNumber2:
+          type: string
+          description: The phone number 2 of the client associated to the position.
+          nullable: true
+        CanTrade:
+          type: boolean
+          description: Indicates whether the position can be traded. This is determined
+            by the type of account.
+      description: The data for the positions of a portfolio.
+    PositionDataModelSortingRuleModel:
+      type: object
+      properties:
+        Property:
+          type: string
+          description: Field name that will be used to sort
+          nullable: true
+        Direction:
+          type: string
+          description: The direction that should be applied. 'Asc' or 'Desc'
+          nullable: true
+          example: Asc
+    PositionLockType:
+      enum:
+      - None
+      - Full
+      - BuyOnly
+      - SellOnly
+      type: string
+    PositionOrderType:
+      enum:
+      - None
+      - Zero
+      - BuyOrder
+      - SellOrder
+      type: string
+      description: The order status of a portfolio position.
+    PositionSecurityModel:
+      required:
+      - Currency
+      - IndustryCodeDescription
+      - MainCategoryDescription
+      - Region
+      - SecuFirm
+      - SecurityDescription
+      - SecurityId
+      - SubCategoryDescription
+      - Symbol
+      type: object
+      properties:
+        SecurityId:
+          type: integer
+          description: The unique identifier of the security.
+          format: int32
+        SecuFirm:
+          type: string
+          description: The secu firm of the security.
+          nullable: true
+        SecurityDescription:
+          type: string
+          description: The description of the security.
+          nullable: true
+        Category:
+          type: integer
+          description: The category of the security.
+          format: int32
+        Symbol:
+          type: string
+          description: The symbol of the security.
+          nullable: true
+        FinancialInstrument:
+          $ref: '#/components/schemas/EnumValue'
+        MainCategoryDescription:
+          type: string
+          description: The main category description of the security.
+          nullable: true
+        SubCategoryDescription:
+          type: string
+          description: The sub category description of the security.
+          nullable: true
+        MarketPrice:
+          type: number
+          description: The market price of the security.
+          format: double
+          nullable: true
+        AskPrice:
+          type: number
+          description: The ask price of the security.
+          format: double
+          nullable: true
+        BidPrice:
+          type: number
+          description: The bid price of the security..
+          format: double
+          nullable: true
+        ClosePrice:
+          type: number
+          description: The close price of the security.
+          format: double
+          nullable: true
+        Currency:
+          type: string
+          description: The currency of the security.
+          nullable: true
+        Cusip:
+          type: string
+          description: The CUSIP of the security.
+          nullable: true
+        Dividend:
+          type: number
+          description: The dividend of the security.
+          format: double
+          nullable: true
+        IndustryCodeDescription:
+          type: string
+          description: The description of the industry code of the security.
+          nullable: true
+        Interest:
+          type: number
+          description: The interest of the security.
+          format: double
+        Region:
+          type: string
+          description: The region of the security.
+          nullable: true
+        ExcludedFromBilling:
+          type: boolean
+          description: Flag indicating if the security is excluded from billing.
+        ExcludedFromBillingFirm:
+          type: boolean
+          description: Flag indicating if the security is excluded from billing at
+            the firm level
+        SecurityFactor:
+          type: number
+          description: The security factor.
+          format: double
+        YieldMethod:
+          type: integer
+          description: The yield method of the security. Values correspond to `Croesus.BusinessUtilities.Enums.YieldMethod`.
+          format: int32
+      description: The security data for the positions of a portfolio.
+    PositionsPerformanceResponseSortingRuleModel:
+      type: object
+      properties:
+        Property:
+          type: string
+          description: Field name that will be used to sort
+          nullable: true
+        Direction:
+          type: string
+          description: The direction that should be applied. 'Asc' or 'Desc'
+          nullable: true
+          example: Asc
+    PreferenceContext:
+      enum:
+      - Definition
+      - Global
+      - Firm
+      - Branch
+      - User
+      type: string
+      description: The context against which a preference value is resolved.
+    PreferenceResponse:
+      required:
+      - Key
+      type: object
+      properties:
+        Key:
+          type: string
+          description: The preference key identifier.
+          nullable: true
+        Value:
+          type: object
+          description: The resolved value of the preference.
+          format: Any object
+          nullable: true
+        ValueType:
+          type: string
+          description: The type of the preference value (e.g. STRING, BOOL, LONG).
+          nullable: true
+        IsSetAsDefault:
+          type: boolean
+          description: "Indicates whether the preference is unset (\"set as default\"\
+            ) at the requested context\r\nlevel; the value is then inherited from\
+            \ a parent level or the definition default.\r\nFalse only when the value\
+            \ is explicitly set at the requested level itself."
+        AccessRead:
+          type: string
+          description: Read access level (All or Restricted).
+          nullable: true
+        AccessWrite:
+          type: string
+          description: Write access level (All or Restricted).
+          nullable: true
+        UseLevel:
+          type: array
+          items:
+            type: string
+          description: The use level of the preference (firm, branch, user scope).
+          nullable: true
+        Group:
+          type: string
+          description: The group this preference belongs to.
+          nullable: true
+        Descriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocalizedDescriptionResponse'
+          description: The localized descriptions of the preference, keyed by ISO
+            639-1 language code (e.g. fr, en).
+          nullable: true
+        Min:
+          type: number
+          description: The minimum value; only set when the definition uses one.
+          format: double
+          nullable: true
+        Max:
+          type: number
+          description: The maximum value; only set when the definition uses one.
+          format: double
+          nullable: true
+        Note:
+          type: string
+          description: The administrative note of the preference; only returned for
+            the Definition context.
+          nullable: true
+        DictionaryEntries:
+          type: array
+          items:
+            $ref: '#/components/schemas/DictionaryEntryResponse'
+          description: The valid values when the preference is dictionary-typed; the
+            value stores the entry index.
+          nullable: true
+      description: Response containing a preference definition and its resolved value.
+    PreferenceResponseIEnumerableStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          type: array
+          items:
+            $ref: '#/components/schemas/PreferenceResponse'
+          description: The real response object/>
+          nullable: true
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    PreferenceResponseStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          $ref: '#/components/schemas/PreferenceResponse'
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    PreferenceSource:
+      enum:
+      - Preference
+      - Config
+      type: string
+      description: The source table of a preference definition.
+    ProcessDateInfo:
+      type: object
+      properties:
+        Date:
+          type: string
+          description: The process date.
+          format: date-time
+        Label:
+          type: string
+          description: The translated process date name.
+          nullable: true
+        Valid:
+          type: boolean
+          description: Indicates if the process date is valid.
+      description: Represent a process date with its associated information.
+    ProductServiceConfigurationEntry:
+      type: object
+      properties:
+        Id:
+          type: integer
+          description: The IndexNo of the product/service from the dictionary
+          format: int64
+          nullable: true
+        Description:
+          type: string
+          description: Description of the product/service
+          nullable: true
+        IsActive:
+          type: boolean
+          description: Whether this product/service is currently active for the user
+      description: Single entry in the product/service configuration list
+    ProductServiceConfigurationPatchRequestJsonPatchDocument:
+      title: ProductServiceConfigurationPatchRequest
+      type: array
+      items:
+        $ref: '#/components/schemas/PatchRequestOperation'
+      description: "Available operations.<ul>\r\n  <li>ActiveIndexes [ Replace ]</li>\r\
+        \n</ul>"
+    ProductServiceConfigurationResponse:
+      type: object
+      properties:
+        Entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductServiceConfigurationEntry'
+          description: List of all available products/services with indication of
+            which are active
+          nullable: true
+      description: Response containing the list of products/services with their active
+        status
+    ProductServiceConfigurationResponseStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          $ref: '#/components/schemas/ProductServiceConfigurationResponse'
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    ProfileRequest:
+      required:
+      - DisplayName
+      - Id
+      type: object
+      properties:
+        Id:
+          type: integer
+          description: Gets or sets the unique identifier of the profile.
+          format: int32
+        DisplayName:
+          type: string
+          description: Gets or sets the display name of the profile.
+          nullable: true
+      description: Represents a request to export a profile with a specified Id and
+        display name.
+    ProjectedIncomeModel:
+      type: object
+      properties:
+        Periods:
+          type: array
+          items:
+            $ref: '#/components/schemas/IncomePeriodModel'
+          description: The list of projected income periods data points.
+          nullable: true
+        Day:
+          type: integer
+          description: The total number of days used for the projected.
+          format: int32
+        Currency:
+          type: string
+          description: The currency of the projected income.
+          nullable: true
+        TotalAmount:
+          type: number
+          description: The total projected income amount of the projected income.
+          format: double
+        ExpiredSecuritiesAmount:
+          type: number
+          description: The amount of income from the expired securities of the projected
+            income.
+          format: double
+        GrandTotalAmount:
+          type: number
+          description: The total projected income amount including expired securities
+            income.
+          format: double
+          readOnly: true
+      description: The data model representing the projected income section.
+    QuickfilterConditionModel:
+      type: object
+      properties:
+        FieldName:
+          type: string
+          nullable: true
+        SelectedOperator:
+          $ref: '#/components/schemas/FilterOperatorEnum'
+        Values:
+          type: array
+          items:
+            type: object
+            format: Any object
+          nullable: true
+    RegionPatchRequestJsonPatchDocument:
+      title: RegionPatchRequest
+      type: array
+      items:
+        $ref: '#/components/schemas/PatchRequestOperation'
+      description: "Available operations.<ul>\r\n  <li>LocalizedNames [ Replace ]</li>\r\
+        \n</ul>"
+    RegionResponse:
+      required:
+      - FirmId
+      - LocalizedNames
+      - RegionId
+      type: object
+      properties:
+        RegionId:
+          type: integer
+          description: The region identifier.
+          format: int64
+        FirmId:
+          type: integer
+          description: The identifier of the firm the region belongs to.
+          format: int64
+        LocalizedNames:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocalizedDescriptionResponse'
+          description: The localized names of the region.
+          nullable: true
+      description: A region of a firm.
+    RegionResponseIEnumerableStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          type: array
+          items:
+            $ref: '#/components/schemas/RegionResponse'
+          description: The real response object/>
+          nullable: true
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    RegionResponseStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          $ref: '#/components/schemas/RegionResponse'
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    RelationshipsPadResponseSortingRuleModel:
+      type: object
+      properties:
+        Property:
+          type: string
+          description: Field name that will be used to sort
+          nullable: true
+        Direction:
+          type: string
+          description: The direction that should be applied. 'Asc' or 'Desc'
+          nullable: true
+          example: Asc
+    RepartitionResponse:
+      type: object
+      properties:
+        Id:
+          type: integer
+          description: The unique identifier of the repartition
+          format: int64
+          nullable: true
+        LocalizedName:
+          type: string
+          description: The localized name of the repartition
+          nullable: true
+        Type:
+          type: integer
+          description: The type of the repartition
+          format: int32
+        PartyId:
+          type: integer
+          description: The party level of the repartition
+          format: int32
+        OwnerId:
+          type: integer
+          description: The owner number of the repartition
+          format: int32
+        IsReadOnly:
+          type: boolean
+          description: The read only status of the repartition
+        IsVisible:
+          type: boolean
+          description: The visibility of the repartition
+      description: Repartition response
+    RepartitionResponseIEnumerableStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          type: array
+          items:
+            $ref: '#/components/schemas/RepartitionResponse'
+          description: The real response object/>
+          nullable: true
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    RepresentativeResponse:
+      required:
+      - Branch
+      - Name
+      - RepresentativeId
+      - RepresentativeNumber
+      type: object
+      properties:
+        RepresentativeId:
+          type: integer
+          description: Identifiant du représentant
+          format: int32
+        RepresentativeNumber:
+          type: string
+          description: Numéro du représentant
+          nullable: true
+        Branch:
+          $ref: '#/components/schemas/BranchResponse'
+        Name:
+          type: string
+          description: Nom du représentant associé au code de représentant
+          nullable: true
+      description: Reponse contenant les informations nécessaires pour afficher un
+        code de représentant
+    RepresentativeResponseIEnumerableStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          type: array
+          items:
+            $ref: '#/components/schemas/RepresentativeResponse'
+          description: The real response object/>
+          nullable: true
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    RiskAllocationDataModel:
+      type: object
+      properties:
+        RiskAllocationLevel:
+          type: integer
+          description: The risk allocation level of the portfolio.
+          format: int32
+          nullable: true
+        MarketValuePercentage:
+          type: number
+          description: The risk allocation market value percentage of the portfolio.
+          format: double
+          nullable: true
+        RiskObjective:
+          type: number
+          description: The target risk of the portfolio.
+          format: double
+          nullable: true
+        SecurityRiskRatingAllocations:
+          type: array
+          items:
+            $ref: '#/components/schemas/SecurityRiskRatingAllocationDataModel'
+          description: The risk rating allocation of the portfolio's securities.
+          nullable: true
+      description: the data for the risk allocation of the portfolio.
+    RiskRatingDataModel:
+      type: object
+      properties:
+        RiskRatingAllocations:
+          type: array
+          items:
+            $ref: '#/components/schemas/RiskAllocationDataModel'
+          description: Risk Rating Allocations of the portfolio.
+          nullable: true
+        RiskRatingScore:
+          $ref: '#/components/schemas/RiskScoreDataModel'
+      description: The data for the risk rating of a portfolio.
+    RiskScoreDataModel:
+      type: object
+      properties:
+        Actual:
+          type: number
+          description: Actual risk rating score
+          format: double
+          nullable: true
+        Objective:
+          type: number
+          description: Target risk rating score.
+          format: double
+          nullable: true
+      description: The data for the risk score of a portfolio.
+    ScimAuthenticationScheme:
+      type: object
+      properties:
+        Type:
+          type: string
+          description: The authentication scheme (e.g., oauth, oauth2, oauthbearertoken,
+            httpbasic, httpdigest).
+          nullable: true
+        Name:
+          type: string
+          description: The common authentication scheme name (e.g., HTTP Basic).
+          nullable: true
+        Description:
+          type: string
+          description: A description of the authentication scheme.
+          nullable: true
+        SpecUri:
+          type: string
+          description: An HTTP-addressable URL pointing to the authentication scheme's
+            specification.
+          nullable: true
+        DocumentationUri:
+          type: string
+          description: An HTTP-addressable URL pointing to the authentication scheme's
+            usage documentation.
+          nullable: true
+        Primary:
+          type: boolean
+          description: Indicates whether this is a primary authentication scheme.
+      description: Authentication scheme definition.
+    ScimBulkSupport:
+      type: object
+      properties:
+        Supported:
+          type: boolean
+          description: Indicates whether bulk operations are supported.
+        MaxOperations:
+          type: integer
+          description: The maximum number of operations supported in a single bulk
+            request.
+          format: int32
+        MaxPayloadSize:
+          type: integer
+          description: The maximum payload size in bytes for a bulk request.
+          format: int32
+      description: Bulk operation support configuration.
+    ScimEmail:
+      type: object
+      properties:
+        value:
+          type: string
+          description: The email address value.
+          nullable: true
+        type:
+          type: string
+          description: A label indicating the email's function (e.g., 'work', 'home').
+          nullable: true
+      description: Represents a SCIM email address with type information.
+    ScimEnterpriseUser:
+      required:
+      - division
+      type: object
+      properties:
+        division:
+          minLength: 1
+          type: string
+          description: The division within the organization to which the user belongs.
+      description: "Represents the SCIM 2.0 Enterprise User Extension (RFC 7643 Section\
+        \ 4.3).\r\nContains enterprise-specific attributes for users."
+    ScimError:
+      type: object
+      properties:
+        schemas:
+          type: array
+          items:
+            type: string
+          description: The SCIM schemas used in this error response.
+          nullable: true
+          example:
+          - urn:ietf:params:scim:schemas:core:2.0:User
+        detail:
+          type: string
+          description: A detailed human-readable message describing the error.
+          nullable: true
+        status:
+          type: string
+          description: The HTTP status code expressed as a JSON string.
+          nullable: true
+        scimType:
+          type: string
+          description: A SCIM detail error keyword (e.g., 'invalidFilter', 'tooMany',
+            'uniqueness', 'mutability').
+          nullable: true
+      description: "Represents a SCIM error response as defined in RFC 7644 Section\
+        \ 3.12.\r\nUsed to communicate errors to clients in a standardized format."
+    ScimFilterSupport:
+      type: object
+      properties:
+        Supported:
+          type: boolean
+          description: Indicates whether filtering is supported.
+        MaxResults:
+          type: integer
+          description: The maximum number of resources returned in a response.
+          format: int32
+      description: Filter support configuration.
+    ScimMeta:
+      type: object
+      properties:
+        resourceType:
+          type: string
+          description: The name of the resource type of the resource (e.g., User,
+            Group).
+          nullable: true
+          readOnly: true
+      description: "Represents resource metadata as defined in SCIM RFC 7643 Section\
+        \ 3.1.\r\nContains information about the resource such as creation time, modification\
+        \ time, and location."
+    ScimName:
+      required:
+      - familyName
+      - givenName
+      type: object
+      properties:
+        familyName:
+          minLength: 1
+          type: string
+          description: The family name (last name) of the user.
+        givenName:
+          minLength: 1
+          type: string
+          description: The given name (first name) of the user.
+      description: Represents the components of a user's name in SCIM format.
+    ScimPatchOperation:
+      type: object
+      properties:
+        op:
+          type: string
+          description: 'The operation to perform: "add", "remove", or "replace" (lowercase
+            per RFC 7644)'
+          nullable: true
+        path:
+          type: string
+          description: The attribute path to modify (e.g., "userName", "emails[type
+            eq \"work\"].value")
+          nullable: true
+        value:
+          type: object
+          description: The value to set (not used for "remove" operations)
+          format: Any object
+          nullable: true
+      description: Represents a single SCIM patch operation (RFC 7644 Section 3.5.2).
+    ScimPatchRequest:
+      type: object
+      properties:
+        schemas:
+          type: array
+          items:
+            type: string
+          description: SCIM schemas - should contain "urn:ietf:params:scim:api:messages:2.0:PatchOp"
+          nullable: true
+        Operations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScimPatchOperation'
+          description: "Operations to perform on the resource.\r\nEach operation specifies\
+            \ an 'op', 'path', and optionally 'value'."
+          nullable: true
+      description: "Represents a SCIM PATCH request model for resource modifications\
+        \ (RFC 7644 Section 3.5.2).\r\nUsed for both User and Group resources."
+    ScimPhoneNumber:
+      type: object
+      properties:
+        value:
+          type: string
+          description: The phone number value.
+          nullable: true
+      description: Represents a SCIM phone number with type information.
+    ScimResourceType:
+      type: object
+      properties:
+        Schemas:
+          type: array
+          items:
+            type: string
+          description: The SCIM schemas used in this resource type response.
+          nullable: true
+          example:
+          - urn:ietf:params:scim:schemas:core:2.0:User
+        Id:
+          type: string
+          description: The resource type's unique identifier.
+          nullable: true
+        Name:
+          type: string
+          description: The resource type's name.
+          nullable: true
+        Endpoint:
+          type: string
+          description: The resource type's HTTP-addressable endpoint relative to the
+            base URL.
+          nullable: true
+        Description:
+          type: string
+          description: The resource type's human-readable description.
+          nullable: true
+        Schema:
+          type: string
+          description: The primary schema URN for this resource type.
+          nullable: true
+        SchemaExtensions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScimSchemaExtension'
+          description: A list of schema extensions supported by this resource type.
+          nullable: true
+        Meta:
+          $ref: '#/components/schemas/ScimResourceTypeMeta'
+      description: "SCIM Resource Type response model as defined in RFC 7644 Section\
+        \ 6.\r\nRepresents a resource type definition including its schema and endpoint\
+        \ information."
+    ScimResourceTypeMeta:
+      type: object
+      properties:
+        Location:
+          type: string
+          description: The URI of the resource type definition.
+          nullable: true
+        ResourceType:
+          type: string
+          description: The name of the resource type.
+          nullable: true
+      description: Metadata for resource type definitions.
+    ScimSchemaAttribute:
+      type: object
+      properties:
+        Name:
+          type: string
+          description: The attribute's name.
+          nullable: true
+        Type:
+          type: string
+          description: The attribute's data type (e.g., string, boolean, integer,
+            complex, reference).
+          nullable: true
+        Description:
+          type: string
+          description: The attribute's human-readable description.
+          nullable: true
+        MultiValued:
+          type: boolean
+          description: Indicates whether the attribute can contain multiple values.
+        Required:
+          type: boolean
+          description: Indicates whether the attribute is required.
+        CaseExact:
+          type: boolean
+          description: Indicates whether the attribute value is case-sensitive.
+        Mutability:
+          type: string
+          description: The attribute's mutability (readOnly, readWrite, immutable,
+            writeOnly).
+          nullable: true
+        Returned:
+          type: string
+          description: When the attribute is returned (always, never, default, request).
+          nullable: true
+        Uniqueness:
+          type: string
+          description: The attribute's uniqueness constraint (none, server, global).
+          nullable: true
+        SubAttributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScimSchemaAttribute'
+          description: Sub-attributes for complex attributes.
+          nullable: true
+      description: Schema attribute definition.
+    ScimSchemaDefinition:
+      type: object
+      properties:
+        Schemas:
+          type: array
+          items:
+            type: string
+          description: The SCIM schemas used in this schema definition.
+          nullable: true
+          example:
+          - urn:ietf:params:scim:schemas:core:2.0:User
+        Id:
+          type: string
+          description: The schema's unique identifier (URN).
+          nullable: true
+        Name:
+          type: string
+          description: The schema's human-readable name.
+          nullable: true
+        Description:
+          type: string
+          description: The schema's human-readable description.
+          nullable: true
+        Attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScimSchemaAttribute'
+          description: The schema's attributes.
+          nullable: true
+        Meta:
+          $ref: '#/components/schemas/ScimSchemaMeta'
+      description: "SCIM Schema response model as defined in RFC 7644 Section 4.\r\
+        \nRepresents a schema definition including its attributes."
+    ScimSchemaExtension:
+      type: object
+      properties:
+        Schema:
+          type: string
+          description: The schema extension's URN.
+          nullable: true
+        Required:
+          type: boolean
+          description: Indicates whether this schema extension is required.
+      description: Schema extension definition for a resource type.
+    ScimSchemaMeta:
+      type: object
+      properties:
+        ResourceType:
+          type: string
+          description: The name of the resource type.
+          nullable: true
+        Location:
+          type: string
+          description: The URI of the schema definition.
+          nullable: true
+      description: Metadata for schema definitions.
+    ScimSearchRequest:
+      type: object
+      properties:
+        schemas:
+          type: array
+          items:
+            type: string
+          description: The SCIM schemas used in this search request.
+          nullable: true
+          example:
+          - urn:ietf:params:scim:schemas:core:2.0:User
+        attributes:
+          type: array
+          items:
+            type: string
+          description: A multi-valued list of strings indicating the names of resource
+            attributes to return in the response.
+          nullable: true
+        excludedAttributes:
+          type: array
+          items:
+            type: string
+          description: A multi-valued list of strings indicating the names of resource
+            attributes to be removed from the default set of attributes to return.
+          nullable: true
+        filter:
+          type: string
+          description: The filter string used to request a subset of resources.
+          nullable: true
+        sortBy:
+          type: string
+          description: A string indicating the attribute whose value shall be used
+            to order the returned responses.
+          nullable: true
+        sortOrder:
+          type: string
+          description: A string indicating the order in which the sortBy parameter
+            is applied (ascending or descending).
+          nullable: true
+        startIndex:
+          type: integer
+          description: The 1-based index of the first query result.
+          format: int32
+        count:
+          type: integer
+          description: An integer indicating the desired maximum number of query results
+            per page.
+          format: int32
+      description: SCIM search request model for the /.search endpoint
+    ScimSearchResponse:
+      type: object
+      properties:
+        schemas:
+          type: array
+          items:
+            type: string
+          description: The SCIM schemas used in this search response.
+          nullable: true
+          example:
+          - urn:ietf:params:scim:schemas:core:2.0:User
+        totalResults:
+          type: integer
+          description: The total number of results matching the query.
+          format: int32
+        startIndex:
+          type: integer
+          description: The 1-based index of the first result in the current set of
+            search results.
+          format: int64
+        itemsPerPage:
+          type: integer
+          description: The number of resources returned in this response.
+          format: int32
+        Resources:
+          type: array
+          items:
+            type: object
+            format: Any object
+          description: A multi-valued list of complex objects containing the requested
+            resources.
+          nullable: true
+      description: SCIM search response model for the /.search endpoint
+    ScimServiceProviderConfig:
+      type: object
+      properties:
+        Schemas:
+          type: array
+          items:
+            type: string
+          description: The SCIM schemas used in this configuration.
+          nullable: true
+          example:
+          - urn:ietf:params:scim:schemas:core:2.0:User
+        DocumentationUri:
+          type: string
+          description: An HTTP-addressable URL pointing to the service provider's
+            documentation.
+          nullable: true
+        Patch:
+          $ref: '#/components/schemas/ScimSupportFeature'
+        Bulk:
+          $ref: '#/components/schemas/ScimBulkSupport'
+        Filter:
+          $ref: '#/components/schemas/ScimFilterSupport'
+        ChangePassword:
+          $ref: '#/components/schemas/ScimSupportFeature'
+        Sort:
+          $ref: '#/components/schemas/ScimSupportFeature'
+        Etag:
+          $ref: '#/components/schemas/ScimSupportFeature'
+        AuthenticationSchemes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScimAuthenticationScheme'
+          description: A multi-valued complex type that specifies supported authentication
+            scheme properties.
+          nullable: true
+        Meta:
+          $ref: '#/components/schemas/ScimServiceProviderMeta'
+      description: "SCIM Service Provider Configuration as defined in RFC 7644 Section\
+        \ 5.\r\nDescribes the capabilities and features of the SCIM service provider."
+    ScimServiceProviderMeta:
+      type: object
+      properties:
+        Location:
+          type: string
+          description: The URI of the service provider configuration.
+          nullable: true
+        ResourceType:
+          type: string
+          description: The name of the resource type (ServiceProviderConfig).
+          nullable: true
+      description: Metadata for service provider config.
+    ScimSupportFeature:
+      type: object
+      properties:
+        Supported:
+          type: boolean
+          description: Indicates whether the feature is supported.
+      description: Represents a supported/unsupported feature.
+    ScimUser:
+      required:
+      - name
+      - urn:ietf:params:scim:schemas:extension:enterprise:2.0:User
+      - userName
+      type: object
+      properties:
+        schemas:
+          type: array
+          items:
+            type: string
+          description: The list of URIs of the SCIM schemas used in this resource
+            representation.
+          nullable: true
+          readOnly: true
+          example:
+          - urn:ietf:params:scim:schemas:core:2.0:User
+        id:
+          type: string
+          description: A unique identifier for the user, assigned by the service provider.
+          nullable: true
+          readOnly: true
+        externalId:
+          type: string
+          description: A unique identifier for the user as defined by the provisioning
+            client.
+          nullable: true
+        userName:
+          minLength: 1
+          type: string
+          description: A unique identifier for the user, typically used as the user's
+            login name.
+        name:
+          $ref: '#/components/schemas/ScimName'
+        userType:
+          type: string
+          description: Identifies the relationship between the organization and the
+            user (e.g., Employee, Contractor).
+          nullable: true
+        preferredLanguage:
+          type: string
+          description: The user's preferred written or spoken language (e.g., en-CA,
+            fr-CA).
+          nullable: true
+        emails:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScimEmail'
+          description: Email addresses for the user (e.g., work, home).
+          nullable: true
+        phoneNumbers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScimPhoneNumber'
+          description: Phone numbers for the user (e.g., work, home, mobile).
+          nullable: true
+        active:
+          type: boolean
+          description: A boolean value indicating the user's administrative status
+            (active or inactive).
+          nullable: true
+        meta:
+          $ref: '#/components/schemas/ScimMeta'
+        urn:ietf:params:scim:schemas:extension:enterprise:2.0:User:
+          $ref: '#/components/schemas/ScimEnterpriseUser'
+      description: "Represents a SCIM 2.0 User resource as defined in RFC 7643.\r\n\
+        Includes core user attributes and the Enterprise User extension."
+    ScimUserScimListResponse:
+      type: object
+      properties:
+        schemas:
+          type: array
+          items:
+            type: string
+          description: The SCIM schemas used in this list response.
+          nullable: true
+          example:
+          - urn:ietf:params:scim:schemas:core:2.0:User
+        totalResults:
+          type: integer
+          description: The total number of resources matching the query, regardless
+            of pagination.
+          format: int32
+        startIndex:
+          type: integer
+          description: The 1-based index of the first result in the current set of
+            results.
+          format: int64
+        itemsPerPage:
+          type: integer
+          description: The number of resources returned in this response.
+          format: int32
+        Resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScimUser'
+          description: A multi-valued list of resources matching the query.
+          nullable: true
+      description: "Represents a paginated list of SCIM resources as defined in RFC\
+        \ 7644 Section 3.4.2.\r\nUsed for returning multiple resources in query and\
+        \ search responses."
+    SecuritiesPadResponseSortingRuleModel:
+      type: object
+      properties:
+        Property:
+          type: string
+          description: Field name that will be used to sort
+          nullable: true
+        Direction:
+          type: string
+          description: The direction that should be applied. 'Asc' or 'Desc'
+          nullable: true
+          example: Asc
+    SecurityRiskRatingAllocationDataModel:
+      type: object
+      properties:
+        SecurityRiskRating:
+          type: integer
+          description: The security risk rating
+          format: int32
+          nullable: true
+        Allocation:
+          type: integer
+          description: The allocation of the risk rating
+          format: int32
+          nullable: true
+        MarketValue:
+          type: number
+          description: The market value of the risk rating.
+          format: double
+          nullable: true
+      description: The data for the security risk rating allocation of the portfolio.
+    SetImpersonateSelectionRequest:
+      required:
+      - FilterType
+      - SelectedIds
+      - Shortcut
+      type: object
+      properties:
+        SelectedIds:
+          type: array
+          items:
+            type: string
+          description: Liste des IDs des éléments sélectionnés à impersonifier (Branches,
+            Representatives, ou Users)
+          nullable: true
+          example:
+          - '109'
+          - '110'
+        FilterType:
+          $ref: '#/components/schemas/FilterType'
+        DiscretionaryFilter:
+          $ref: '#/components/schemas/DiscretionaryFilter'
+        Shortcut:
+          $ref: '#/components/schemas/Shortcut'
+      description: Requête contenant les informations nécessaires pour mettre la sélection
+        courante en cache
+    Severity:
+      enum:
+      - Error
+      - Warning
+      - Info
+      type: string
+      description: Specifies the severity of a rule.
+    Shortcut:
+      type: object
+      properties:
+        Type:
+          $ref: '#/components/schemas/ShortcutType'
+        Value:
+          type: string
+          nullable: true
+    ShortcutType:
+      enum:
+      - Selection
+      - AccessLevel
+      - Repcode
+      type: string
+    SimpleCondition:
+      required:
+      - ConditionValues
+      - FieldName
+      - Operator
+      type: object
+      properties:
+        FieldName:
+          type: string
+          description: Gets or sets the name of the field to which the condition applies.
+          nullable: true
+        Operator:
+          type: string
+          description: Gets or sets the comparison operator used in the condition
+            (e.g., "equals", "greater than", etc.).
+          nullable: true
+        MathType:
+          type: integer
+          description: Gets or sets the mathematical type or operation to be applied.
+          format: int32
+          nullable: true
+        ConditionValues:
+          type: array
+          items:
+            type: object
+            format: Any object
+          description: Gets or sets the collection of values to be used in the condition
+            evaluation.
+          nullable: true
+      description: "Represents a simple condition\r\nThis class defines a single condition\
+        \ with a field, operator, and associated values."
+    SimulatedPositionKey:
+      type: object
+      properties:
+        AccountId:
+          type: integer
+          description: The id of the account the position belongs to.
+          format: int32
+        SecurityId:
+          type: integer
+          description: The id of the security the position holds.
+          format: int32
+      description: "Identifies a simulated position for row-selection filtering.\r\
+        \n            \r\nA fictitious account's positions may not have a database\
+        \ `PositionId` (it can be\r\n`0` or null on a not-yet-saved simulated position),\
+        \ so a simulated position is keyed\r\nby the pair (Croesus.PortfolioApplicationService.Core.Contracts.V1.Rules.SimulatedPositionKey.AccountId,\
+        \ Croesus.PortfolioApplicationService.Core.Contracts.V1.Rules.SimulatedPositionKey.SecurityId)\
+        \ instead."
+    SimulationPositionExportBusinessRulesModel:
+      required:
+      - GroupType
+      - PortfolioState
+      type: object
+      properties:
+        PortfolioState:
+          $ref: '#/components/schemas/PortfolioStateData'
+        GroupType:
+          type: string
+          description: "The grouping mode. In simulation only `None` and `ByAssetClass`\
+            \ are possible\r\n(group-by-security and group-by-sleeve are not available\
+            \ in simulation)."
+          nullable: true
+        AssetClassId:
+          type: integer
+          description: "When grouping by asset class, the specific asset class to\
+            \ drill into. When null in\r\n`ByAssetClass` mode, one summary row per\
+            \ asset-class group is exported."
+          format: int32
+          nullable: true
+        SelectedIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/SimulatedPositionKey'
+          description: "The selected positions to export, keyed by (AccountId, SecurityId).\
+            \ When null or empty,\r\nall positions are exported. Asset-class summary\
+            \ rows are not individually selectable."
+          nullable: true
+        IncludeZeroPositions:
+          type: boolean
+          description: "Carried for parity with the standard positions export. The\
+            \ projected\r\nCroesus.PortfolioApplicationService.Core.Contracts.V1.Rules.SimulationPositionExportBusinessRulesModel.PortfolioState\
+            \ already reflects the positions displayed in the grid, so\r\nthis flag\
+            \ does not re-filter rows server-side."
+        IncludeFundAllocation:
+          type: boolean
+          description: "Carried for parity with the standard positions export. The\
+            \ projected\r\nCroesus.PortfolioApplicationService.Core.Contracts.V1.Rules.SimulationPositionExportBusinessRulesModel.PortfolioState\
+            \ already reflects fund allocation as displayed."
+        Currency:
+          type: string
+          description: "Carried for parity with the standard positions export. The\
+            \ projected\r\nCroesus.PortfolioApplicationService.Core.Contracts.V1.Rules.SimulationPositionExportBusinessRulesModel.PortfolioState\
+            \ values are already expressed in the displayed currency."
+          nullable: true
+      description: "Business rules for exporting the positions of a <b>simulated</b>\
+        \ (What-If) portfolio.\r\n            \r\nUnlike `ExportPositionBusinessRulesModel`,\
+        \ this model carries the already-computed\r\nCroesus.PortfolioApplicationService.Core.Contracts.V1.Rules.SimulationPositionExportBusinessRulesModel.PortfolioState\
+        \ sent by the frontend instead of a portfolio context\r\n(`Ids`/`PortfolioType`/`PortfolioDate`).\
+        \ The export is produced by projecting\r\nthat state directly into rows —\
+        \ no `FetchPortfolio`, no replay of running actions and no\r\nrecalculation.\
+        \ The standard `ExportPositionBusinessRulesModel` is left untouched."
+    SimulationPositionExportBusinessRulesModelPositionDataModelFilteredBodyModel:
+      type: object
+      properties:
+        FilterRules:
+          type: string
+          nullable: true
+        SortingRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/PositionDataModelSortingRuleModel'
+          nullable: true
+        BusinessRules:
+          $ref: '#/components/schemas/SimulationPositionExportBusinessRulesModel'
+        Paging:
+          $ref: '#/components/schemas/PaginationModelWithBody'
+    SleevesPadRecordResponseSortingRuleModel:
+      type: object
+      properties:
+        Property:
+          type: string
+          description: Field name that will be used to sort
+          nullable: true
+        Direction:
+          type: string
+          description: The direction that should be applied. 'Asc' or 'Desc'
+          nullable: true
+          example: Asc
+    SourceContextType:
+      enum:
+      - Client
+      - Relationship
+      - Account
+      - Security
+      - Model
+      - Sleeve
+      - Position
+      - Order
+      type: string
+      description: Type of source Ids to fetch.
+    SourceListType:
+      enum:
+      - Account
+      - Client
+      - MainClient
+      - Relationship
+      - Model
+      - Billing
+      - Security
+      - Sleeve
+      - Undefined
+      type: string
+    StandardMessage:
+      type: object
+      properties:
+        Type:
+          $ref: '#/components/schemas/StandardMessageType'
+        Code:
+          type: integer
+          description: Error code. Used for internal investigation.
+          format: int64
+          nullable: true
+        Message:
+          type: string
+          description: The error message.
+          nullable: true
+        Source:
+          type: string
+          description: Where the error occur in our system. Used for internal investigation.
+          nullable: true
+      description: A list of message that contains any errors or warning that should
+        be addressed
+    StandardMessageType:
+      enum:
+      - Unknown
+      - Information
+      - Error
+      - Warning
+      type: string
+      description: A list of possible values for the message type
+    SummaryModel:
+      type: object
+      properties:
+        AccruedInterestDividends:
+          type: number
+          description: The Accrued Interest dividends for the summary.
+          format: double
+        AnnualIncome:
+          type: number
+          description: The Annual Income for the summary.
+          format: double
+        AverageCostYield:
+          type: number
+          description: The Average Cost Yield for the summary.
+          format: double
+        AverageMaturity:
+          type: number
+          description: The Average Maturity for the summary.
+          format: double
+        AverageModifiedDuration:
+          type: number
+          description: The Average Modified Duration for the summary.
+          format: double
+        Balance:
+          type: number
+          description: The Balance for the summary.
+          format: double
+        BalancePercent:
+          type: number
+          description: The Balance Percent for the summary.
+          format: double
+          nullable: true
+        BookValue:
+          type: number
+          description: The Book Value for the summary.
+          format: double
+          nullable: true
+        Margin:
+          type: number
+          description: The Margin for the summary.
+          format: double
+          nullable: true
+        MarketValue:
+          type: number
+          description: The Market Value for the summary.
+          format: double
+        TotalValue:
+          type: number
+          description: The Total Value for the summary.
+          format: double
+        ExchangeRate:
+          type: number
+          description: The Exchange Rate for the portfolio.
+          format: double
+        InvestmentObjective:
+          $ref: '#/components/schemas/InvestmentObjectiveModel'
+      description: The data for the summary section of a portfolio.
+    SystemDateResponse:
+      type: object
+      properties:
+        DatabaseDate:
+          type: string
+          description: The database date.
+          format: date-time
+          nullable: true
+        AccountsAndClients:
+          $ref: '#/components/schemas/ProcessDateInfo'
+        Securities:
+          $ref: '#/components/schemas/ProcessDateInfo'
+        Transactions:
+          $ref: '#/components/schemas/ProcessDateInfo'
+        TotalValues:
+          $ref: '#/components/schemas/ProcessDateInfo'
+        Performance:
+          $ref: '#/components/schemas/ProcessDateInfo'
+        RiskRatingMethods:
+          $ref: '#/components/schemas/ProcessDateInfo'
+        TransactionBlotter:
+          $ref: '#/components/schemas/ProcessDateInfo'
+        AutomatedAlerts:
+          $ref: '#/components/schemas/ProcessDateInfo'
+        Reports:
+          $ref: '#/components/schemas/ProcessDateInfo'
+        ClientSleeves:
+          $ref: '#/components/schemas/ClientSleevesProcessDateInfo'
+      description: Represents a response for process dates.
+    SystemDateResponseStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          $ref: '#/components/schemas/SystemDateResponse'
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    TaxSlipByTransIssuedBy:
+      enum:
+      - Unknown
+      - Firm
+      - ThirdParty
+      type: string
+    TaxSlipsTransactionCreateRequest:
+      type: object
+      properties:
+        AccountType:
+          type: string
+          description: Gets or sets the type of the account associated with the transaction.
+          nullable: true
+        TaxSlipId:
+          type: integer
+          description: Gets or sets the identifier of the tax slip.
+          format: int32
+        TransactionDescriptionId:
+          type: integer
+          description: Gets or sets the unique identifier for the transaction description.
+          format: int32
+        FiscalType:
+          $ref: '#/components/schemas/FiscalType'
+        Issuer:
+          $ref: '#/components/schemas/TaxSlipByTransIssuedBy'
+        ApproximateDate:
+          type: string
+          description: Gets or sets the approximate date of the transaction.
+          format: date-time
+        TransactionTypeCodes:
+          type: array
+          items:
+            type: string
+          description: Gets or sets the list of transaction type codes.
+          nullable: true
+      description: Represents a request containing information about a tax slip transaction
+        to create.
+    TaxSlipsTransactionPatchRequestJsonPatchDocument:
+      title: TaxSlipsTransactionPatchRequest
+      type: array
+      items:
+        $ref: '#/components/schemas/PatchRequestOperation'
+      description: "Available operations.<ul>\r\n  <li>AccountType [ Replace ]</li>\r\
+        \n  <li>TaxSlipId [ Replace ]</li>\r\n  <li>TransactionDescriptionId [ Replace\
+        \ ]</li>\r\n  <li>FiscalType [ Replace ]</li>\r\n  <li>Issuer [ Replace ]</li>\r\
+        \n  <li>ApproximateDate [ Replace ]</li>\r\n  <li>TransactionTypeCodes [ Replace\
+        \ ]</li>\r\n</ul>"
+    TaxSlipsTransactionResponse:
+      type: object
+      properties:
+        Id:
+          type: integer
+          description: Gets or sets the unique identifier of the transaction.
+          format: int64
+          nullable: true
+        AccountType:
+          type: string
+          description: Gets or sets the type of the account associated with the transaction.
+          nullable: true
+        LocalizedAccountType:
+          type: string
+          description: Gets or sets the localized type of the account associated with
+            the transaction.
+          nullable: true
+        TaxSlipId:
+          type: integer
+          description: Gets or sets the identifier of the tax slip.
+          format: int32
+        LocalizedTaxSlip:
+          type: string
+          description: Gets or sets the localized name of the tax slip.
+          nullable: true
+        TransactionDescriptionId:
+          type: integer
+          description: Gets or sets the unique identifier for the transaction description.
+          format: int32
+        LocalizedTransactionDescription:
+          type: string
+          description: Gets or sets the localized description of the transaction.
+          nullable: true
+        FiscalPeriod:
+          type: string
+          description: Gets or sets the fiscal period for the transaction.
+          nullable: true
+        LocalizedIssuer:
+          type: string
+          description: Gets or sets the localized name of the issuer.
+          nullable: true
+        ApproximateDate:
+          type: string
+          description: Gets or sets the approximate date of the transaction.
+          format: date-time
+        TransactionTypeCodes:
+          type: array
+          items:
+            type: string
+          description: Gets or sets the list of transaction type codes.
+          nullable: true
+      description: Represents a response containing information about a tax slip transaction.
+    TaxSlipsTransactionResponsePagedListStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxSlipsTransactionResponse'
+          description: The real response object/>
+          nullable: true
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    TaxSlipsTransactionResponseStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          $ref: '#/components/schemas/TaxSlipsTransactionResponse'
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    TradeDateBalanceModel:
+      type: object
+      properties:
+        ReviewedTransactions:
+          type: number
+          description: The reviewed transactions of the portfolio.
+          format: double
+          nullable: true
+        TradeDateBalance:
+          type: number
+          description: The trade date balance of the portfolio.
+          format: double
+          nullable: true
+        IsAdjustedSettlementDateBalanceVisible:
+          type: boolean
+          description: Indicates if the adjusted settlement date balance of the portfolio
+            should be visible.
+        AdjustedSettlementDateBalance:
+          type: number
+          description: The adjusted settlement date balance of the portfolio.
+          format: double
+          nullable: true
+      description: The data for the trade date balance of a portfolio.
+    TransactionsPadResponseSortingRuleModel:
+      type: object
+      properties:
+        Property:
+          type: string
+          description: Field name that will be used to sort
+          nullable: true
+        Direction:
+          type: string
+          description: The direction that should be applied. 'Asc' or 'Desc'
+          nullable: true
+          example: Asc
+    TransactionsPadsBusinessRulesModel:
+      type: object
+      properties:
+        CriteriaId:
+          type: integer
+          description: "The information requested will apply the criteria if a snapshot\
+            \ of this criteria exist.\r\n</br>\r\nIf none specified, all items will\
+            \ be returned with the paging configuration."
+          format: int32
+          nullable: true
+        IsCriteriaSelected:
+          type: boolean
+          nullable: true
+        CurrencyData:
+          $ref: '#/components/schemas/CurrencyBusinessRulesModel'
+        RequestedCurrency:
+          type: string
+          nullable: true
+          readOnly: true
+        QuickfilterIds:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: "The information requested will apply the quickFilters.\r\n\
+            </br>\r\nIf none specified, all items will be returned with the paging\
+            \ configuration."
+          nullable: true
+        ProfileIds:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: List of profiles to return along with the standard information.
+          nullable: true
+        QuickfilterConditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuickfilterConditionModel'
+          description: List of quickfilter conditions
+          nullable: true
+        SourceIds:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: "List of source ids. \r\n</br>\r\nThe list of records will\
+            \ be filtered to only contain records holding or linked to at least one\
+            \ of the designated source ids(Account, Client, Relationship or Security).\r\
+            \n\r\n</br>The sourceType parameter is required for it to work.\r\n\r\n\
+            </br>By default, a maximum of 50 ids can be included."
+          nullable: true
+        SourceType:
+          $ref: '#/components/schemas/SourceContextType'
+        Period:
+          $ref: '#/components/schemas/PeriodModel'
+        IsCashflow:
+          type: boolean
+          description: Only return cashflow transactions
+          nullable: true
+        IncludeCancelledTransactions:
+          type: boolean
+          description: Include cancelled transactions
+          nullable: true
+      description: Business rules model for the transactions pad
+    TransactionsPadsBusinessRulesModelTransactionsPadResponseFilteredBodyModel:
+      type: object
+      properties:
+        FilterRules:
+          type: string
+          nullable: true
+        SortingRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransactionsPadResponseSortingRuleModel'
+          nullable: true
+        BusinessRules:
+          $ref: '#/components/schemas/TransactionsPadsBusinessRulesModel'
+        Paging:
+          $ref: '#/components/schemas/PaginationModelWithBody'
+    UserAccessLevel:
+      enum:
+      - BranchAdmin
+      - BranchManager
+      - FirmAdmin
+      - FirmManager
+      - FirmUser
+      - HelpDesk
+      - IaAssistant
+      - InvestmentAdvisor
+      - MultiBranchManager
+      - SystemAdmin
+      type: string
+      description: Specifies the access levels for users within the services.
+    UserCreationParams:
+      required:
+      - BranchId
+      - Email
+      - FirstName
+      - Name
+      - Username
+      type: object
+      properties:
+        FirstName:
+          type: string
+          description: The first name of the user.
+          nullable: true
+        Name:
+          type: string
+          description: The last name of the user.
+          nullable: true
+        Email:
+          type: string
+          description: The email of the user.
+          nullable: true
+        AccessLevel:
+          $ref: '#/components/schemas/UserAccessLevel'
+        Username:
+          type: string
+          description: The username of the user / the station ID.
+          nullable: true
+        BranchId:
+          type: string
+          description: The branch ID of the user.
+          nullable: true
+        Language:
+          $ref: '#/components/schemas/Cultures'
+        Phone1:
+          type: string
+          description: Main phone number of the user.
+          nullable: true
+        Phone2:
+          type: string
+          description: Alternative phone number of the user.
+          nullable: true
+        RepresentativeIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+          description: RepIds to assign to the user.
+          nullable: true
+        FederatedId:
+          type: string
+          description: FederatedId assigned to the user.
+          nullable: true
+        RecoveryEmail:
+          type: string
+          description: '[IDENTITY] The email address to send recovery instructions
+            to.'
+          nullable: true
+        IsSsoOnly:
+          type: boolean
+          description: '[IDENTITY] Indicates that the user should only be able to
+            log in via SSO.'
+        Active:
+          type: boolean
+          description: '[IDENTITY] Indicates if the user is active or not.'
+      description: Fields to create a user (They're not all required).
+    UserPatchRequestJsonPatchDocument:
+      title: UserPatchRequest
+      type: array
+      items:
+        $ref: '#/components/schemas/PatchRequestOperation'
+      description: "Available operations.<ul>\r\n  <li>StationId [ Replace ]</li>\r\
+        \n  <li>Name [ Replace ]</li>\r\n  <li>LastName [ Replace ]</li>\r\n  <li>Email\
+        \ [ Replace ]</li>\r\n  <li>Language [ Replace ]</li>\r\n  <li>Phone1 [ Replace\
+        \ ]</li>\r\n  <li>Phone2 [ Replace ]</li>\r\n  <li>AccessLevel [ Replace ]</li>\r\
+        \n  <li>BranchNumber [ Replace ]</li>\r\n  <li>RecoveryEmail [ Replace ]</li>\r\
+        \n  <li>WaActif [ Replace ]</li>\r\n  <li>Active [ Replace ]</li>\r\n  <li>IsSsoOnly\
+        \ [ Replace ]</li>\r\n  <li>FederatedId [ Replace ]</li>\r\n</ul>"
+    UserRepresentativePatchRequestJsonPatchDocument:
+      title: UserRepresentativePatchRequest
+      type: array
+      items:
+        $ref: '#/components/schemas/PatchRequestOperation'
+      description: "Available operations.<ul>\r\n  <li>RepresentativeIds [ Add, Replace,\
+        \ Remove ]</li>\r\n</ul>"
+    UserRepresentativeRelation:
+      type: object
+      properties:
+        RepresentativeId:
+          type: integer
+          description: The unique identifier of the Representative.
+          format: int64
+        RepresentativeName:
+          type: string
+          description: The Name of the Representative
+          nullable: true
+        RepresentativeCode:
+          type: string
+          description: The number of the Representative (NoRep/RepCode).
+          nullable: true
+      description: Represents a relation between a user and a representative assigned
+        to them.
+    UserRepresentativeRelationsResponse:
+      required:
+      - Representatives
+      type: object
+      properties:
+        UserId:
+          type: integer
+          description: The unique identifier of the user.
+          format: int64
+        Representatives:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserRepresentativeRelation'
+          description: The list of representative relations for the user.
+          nullable: true
+      description: Represents the user's representative relations.
+    UserRepresentativeRelationsResponseStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          $ref: '#/components/schemas/UserRepresentativeRelationsResponse'
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    UserResponse:
+      required:
+      - Branch
+      - Email
+      - FirstName
+      - Language
+      - LastName
+      - RepresentativeIds
+      - UserId
+      - Username
+      type: object
+      properties:
+        UserId:
+          type: integer
+          description: Identifiant de l'utilisateur
+          format: int64
+        FirstName:
+          type: string
+          description: Représente le prénom de l'utilisateur
+          nullable: true
+        LastName:
+          type: string
+          description: Représente le nom de famille de l'utilisateur
+          nullable: true
+        Branch:
+          $ref: '#/components/schemas/BranchResponse'
+        Username:
+          type: string
+          description: Représente le nom d'utilisateur de l'utilisateur
+          nullable: true
+        Email:
+          type: string
+          description: Représente l'email de l'utilisateur
+          nullable: true
+        Language:
+          type: string
+          description: Représente le langage de l'utilisateur
+          nullable: true
+        Phone:
+          type: string
+          description: Représente le téléphone principal de l'utilisateur
+          nullable: true
+        AlternativePhone:
+          type: string
+          description: Représente le téléphone principal de l'utilisateur
+          nullable: true
+        RepresentativeIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+          description: Représente la liste des identifiants de repcodes associés au
+            user
+          nullable: true
+        FederatedId:
+          type: string
+          description: Représente la liste des identifiants de repcodes associés au
+            user
+          nullable: true
+        AccessLevel:
+          $ref: '#/components/schemas/UserAccessLevel'
+        HasWebAccess:
+          type: boolean
+          description: Indique si le user a accès à WebAdvisor
+        RecoveryEmail:
+          type: string
+          description: '[IDENTITY] L''adresse courriel à laquelle envoyer les instructions
+            de récupération.'
+          nullable: true
+        IsSsoOnly:
+          type: boolean
+          description: '[IDENTITY] Indique que l''utilisateur ne devrait pouvoir se
+            connecter que via SSO.'
+        IsLicenceActivated:
+          type: boolean
+          description: '[IDENTITY] Indique si l''utilisateur est actif ou non.'
+      description: Reponse contenant les informations nécessaires pour afficher une
+        utilisateur
+    UserResponseIEnumerableStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserResponse'
+          description: The real response object/>
+          nullable: true
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    UserResponseStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          $ref: '#/components/schemas/UserResponse'
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    ValidationFailure:
+      type: object
+      properties:
+        PropertyName:
+          type: string
+          description: The name of the property.
+          nullable: true
+        ErrorMessage:
+          type: string
+          description: The error message
+          nullable: true
+        AttemptedValue:
+          type: object
+          description: The property value that caused the failure.
+          format: Any object
+          nullable: true
+        CustomState:
+          type: object
+          description: Custom state associated with the failure.
+          format: Any object
+          nullable: true
+        Severity:
+          $ref: '#/components/schemas/Severity'
+        ErrorCode:
+          type: string
+          description: Gets or sets the error code.
+          nullable: true
+        FormattedMessagePlaceholderValues:
+          type: object
+          additionalProperties:
+            type: object
+            format: Any object
+            nullable: true
+          description: Gets or sets the formatted message placeholder values.
+          nullable: true
+      description: Defines a validation failure
+    ValidationResult:
+      type: object
+      properties:
+        IsValid:
+          type: boolean
+          description: Whether validation succeeded
+          readOnly: true
+        Errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationFailure'
+          description: A collection of errors
+          nullable: true
+        RuleSetsExecuted:
+          type: string
+          description: The RuleSets that were executed during the validation run.
+          format: List of strings seperated by commas, e.g, 'string1,string2,string3'
+          nullable: true
+      description: The result of running a validator
+    WorkgroupResponse:
+      required:
+      - SystemUsers
+      - UsersInWorkgroup
+      - WorkgroupRepresentatives
+      type: object
+      properties:
+        SystemUsers:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserResponse'
+          description: System users
+          nullable: true
+        WorkgroupRepresentatives:
+          type: array
+          items:
+            $ref: '#/components/schemas/RepresentativeResponse'
+          description: Representatives in the workgroup
+          nullable: true
+        UsersInWorkgroup:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserResponse'
+          description: Users in the workgroup
+          nullable: true
+      description: Response containing workgroup information
+    WorkgroupResponseStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          $ref: '#/components/schemas/WorkgroupResponse'
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    WorkgroupUserResponse:
+      required:
+      - FullName
+      - Id
+      type: object
+      properties:
+        Id:
+          type: integer
+          description: User identifier.
+          format: int32
+        FullName:
+          type: string
+          description: Full name of the user.
+          nullable: true
+      description: Response containing the information of a workgroup user.
+    WorkgroupUserResponseListStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkgroupUserResponse'
+          description: The real response object/>
+          nullable: true
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+  securitySchemes:
+    Bearer:
+      type: http
+      description: JWT Authorization header using the Bearer scheme. (JWT_GENERATED
+        ONLY)
+      scheme: bearer
+      bearerFormat: JWT
+x-headmatter:
+  readable_by:
+  - croesus-dev

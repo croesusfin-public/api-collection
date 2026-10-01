@@ -1,0 +1,473 @@
+openapi: 3.0.1
+info:
+  title: API AccessService Public V1
+  version: public-v1
+servers:
+- url: https://api.gateway.croesus.com
+- url: https://api-nonprod.gateway.croesus.com
+security:
+- Bearer: []
+paths:
+  /acc/api/v1/software/{id}:
+    get:
+      tags:
+      - SoftwarePublic
+      summary: Get a single software by its id.
+      description: '`min ref 2026-12 (90.54)`'
+      operationId: getSoftwareById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/SoftwarePublicDtoStandard'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SoftwarePublicDtoStandard'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/SoftwarePublicDtoStandard'
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Error'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Error'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Error'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Error'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      tags:
+      - SoftwarePublic
+      summary: Patch a software (limited fields — currently only Name).
+      description: '`min ref 2026-12 (90.54)`'
+      operationId: patchSoftware
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SoftwarePublicPatchRequestJsonPatchDocument'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/SoftwarePublicPatchRequestJsonPatchDocument'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/SoftwarePublicPatchRequestJsonPatchDocument'
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/SoftwarePublicPatchResponseStandard'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SoftwarePublicPatchResponseStandard'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/SoftwarePublicPatchResponseStandard'
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Error'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Error'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Error'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Error'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /acc/api/v1/software:
+    get:
+      tags:
+      - SoftwarePublic
+      summary: Get the list of software, optionally filtered by type.
+      description: '`min ref 2026-12 (90.54)`'
+      operationId: getSoftwares
+      parameters:
+      - name: softwareType
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/SoftwarePublicListDtoStandard'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SoftwarePublicListDtoStandard'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/SoftwarePublicListDtoStandard'
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Error'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Error'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Error'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Error'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    BrandingPublicItemDto:
+      type: object
+      properties:
+        LocalizedName:
+          type: string
+          nullable: true
+        Culture:
+          type: string
+          nullable: true
+        DisplayOrder:
+          type: integer
+          format: int32
+    Error:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          type: object
+          description: Aways null since its an error
+          format: Any object
+          nullable: true
+          readOnly: true
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: A list of message that contains any errors or warning that
+            should be addressed
+          nullable: true
+      description: Standard generic response for errors cases
+    OAuthPublicDto:
+      type: object
+      properties:
+        ClientId:
+          type: string
+          nullable: true
+        Scope:
+          type: string
+          nullable: true
+        Grant:
+          type: string
+          nullable: true
+        SoftwareType:
+          type: string
+          nullable: true
+    PatchRequestOperation:
+      type: object
+      properties:
+        op:
+          type: string
+          description: Operation to apply on the property.
+          example: replace
+        value:
+          type: object
+          description: The new value of the property to update. This value can be
+            a string, a dictionaryId, a date, a boolean, a numeric, etc.
+          example: 1
+        path:
+          type: string
+          description: Path of the property to update.
+          example: /Value
+      description: The list of patch operations.
+    SoftwarePublicDto:
+      type: object
+      properties:
+        SoftwareId:
+          type: integer
+          format: int64
+        Name:
+          type: string
+          nullable: true
+        OAuth:
+          $ref: '#/components/schemas/OAuthPublicDto'
+        Brandings:
+          type: array
+          items:
+            $ref: '#/components/schemas/BrandingPublicItemDto'
+          nullable: true
+    SoftwarePublicDtoStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          $ref: '#/components/schemas/SoftwarePublicDto'
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    SoftwarePublicItemDto:
+      type: object
+      properties:
+        SoftwareId:
+          type: integer
+          format: int64
+        Name:
+          type: string
+          nullable: true
+        Brandings:
+          type: array
+          items:
+            $ref: '#/components/schemas/BrandingPublicItemDto'
+          nullable: true
+    SoftwarePublicListDto:
+      type: object
+      properties:
+        Items:
+          type: array
+          items:
+            $ref: '#/components/schemas/SoftwarePublicItemDto'
+          nullable: true
+    SoftwarePublicListDtoStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          $ref: '#/components/schemas/SoftwarePublicListDto'
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    SoftwarePublicPatchRequestJsonPatchDocument:
+      title: SoftwarePublicPatchRequest
+      type: array
+      items:
+        $ref: '#/components/schemas/PatchRequestOperation'
+      description: "Available operations.<ul>\r\n  <li>PublicId [  ]</li>\r\n  <li>PublicKey\
+        \ [  ]</li>\r\n  <li>SecretId [  ]</li>\r\n  <li>RedirectUrl [  ]</li>\r\n\
+        </ul>"
+    SoftwarePublicPatchResponse:
+      type: object
+    SoftwarePublicPatchResponseStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          $ref: '#/components/schemas/SoftwarePublicPatchResponse'
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    StandardMessage:
+      type: object
+      properties:
+        Type:
+          $ref: '#/components/schemas/StandardMessageType'
+        Code:
+          type: integer
+          description: Error code. Used for internal investigation.
+          format: int64
+          nullable: true
+        Message:
+          type: string
+          description: The error message.
+          nullable: true
+        Source:
+          type: string
+          description: Where the error occur in our system. Used for internal investigation.
+          nullable: true
+      description: A list of message that contains any errors or warning that should
+        be addressed
+    StandardMessageType:
+      enum:
+      - Unknown
+      - Information
+      - Error
+      - Warning
+      type: string
+      description: A list of possible values for the message type
+  securitySchemes:
+    Bearer:
+      type: http
+      description: JWT Authorization header using the Bearer scheme. (JWT_GENERATED
+        ONLY)
+      scheme: bearer
+      bearerFormat: JWT
+x-headmatter:
+  readable_by:
+  - croesus-dev
+  - access-public
