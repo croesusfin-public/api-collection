@@ -2473,6 +2473,12 @@ components:
           type: boolean
           description: Indicates if we should be able to create sleeves from asset
             classes
+        CanRebalance:
+          type: boolean
+          description: "Indicates if a rebalancing can be started from the Portfolio\
+            \ module for this portfolio: a single\r\naccount (UMA rebalancing rights\
+            \ when it has sleeves, the models feature otherwise) or a model\r\nthat\
+            \ is not a basket. PREF_ENABLE_MODEL is required in every case (MROX-11136)."
       description: The Metadata of a portfolio.
     ModuleConditionsResponse:
       type: object
