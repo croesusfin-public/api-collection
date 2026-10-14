@@ -2906,6 +2906,17 @@ components:
           description: The id of the position.
           format: int64
           nullable: true
+        SleeveId:
+          type: integer
+          description: The id of the sleeve account associated to the position, if
+            any.
+          format: int32
+          nullable: true
+        SleeveNumber:
+          type: string
+          description: The number of the sleeve account associated to the position,
+            if any.
+          nullable: true
         ProjectedIncomeData:
           $ref: '#/components/schemas/ProjectedIncomeModel'
         AssetAllocationData:
