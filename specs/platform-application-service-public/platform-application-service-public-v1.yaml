@@ -4615,6 +4615,12 @@ components:
           description: The direction that should be applied. 'Asc' or 'Desc'
           nullable: true
           example: Asc
+    SecurityPatchRequestJsonPatchDocument:
+      title: SecurityPatchRequest
+      type: array
+      items:
+        $ref: '#/components/schemas/PatchRequestOperation'
+      description: "Available operations.<ul>\r\n  <li>Overwrite [  ]</li>\r\n</ul>"
     SecurityRiskRatingAllocationDataModel:
       type: object
       properties:
