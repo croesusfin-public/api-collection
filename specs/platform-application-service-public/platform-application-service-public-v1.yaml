@@ -623,6 +623,15 @@ components:
       - InvestmentObjective
       - Sleeves
       type: string
+    AssigneeType:
+      enum:
+      - Account
+      - Client
+      - Relationship
+      - Sleeve
+      type: string
+      description: Enum representing the different types of portfolios that can be
+        rebalanced.
     BoardType:
       enum:
       - Undefined
@@ -1936,6 +1945,41 @@ components:
           $ref: '#/components/schemas/ExportProjectedIncomeBusinessRulesModel'
         Paging:
           $ref: '#/components/schemas/PaginationModelWithBody'
+    ExportProposedOrdersBusinessRulesModel:
+      type: object
+      properties:
+        RebalancingId:
+          type: integer
+          description: The rebalancing whose proposed orders are exported.
+          format: int32
+        Assignee:
+          $ref: '#/components/schemas/RebalancingAssigneeSelection'
+        QuickfilterConditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuickfilterConditionModel'
+          description: The optional quick filter conditions applied to the proposed
+            orders (combined with the FilterRules).
+          nullable: true
+      description: "Business rules for exporting (api/v1/export) the ungrouped proposed\
+        \ orders of the projected portfolios step\r\nof a rebalancing: the rebalancing\
+        \ route parameter plus the business rules of the proposed orders grid\r\n\
+        (POST /rebalancings/{rebalancingId}/projectedportfolios/proposedorders/filtered)."
+    ExportProposedOrdersBusinessRulesModelProposedOrderResponseFilteredBodyModel:
+      type: object
+      properties:
+        FilterRules:
+          type: string
+          nullable: true
+        SortingRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProposedOrderResponseSortingRuleModel'
+          nullable: true
+        BusinessRules:
+          $ref: '#/components/schemas/ExportProposedOrdersBusinessRulesModel'
+        Paging:
+          $ref: '#/components/schemas/PaginationModelWithBody'
     ExportRequest:
       required:
       - Columns
@@ -1972,6 +2016,8 @@ components:
           $ref: '#/components/schemas/PadsBusinessRulesModelSleevesPadRecordResponseFilteredBodyModel'
         ModelsPadExportRequest:
           $ref: '#/components/schemas/PadsBusinessRulesModelModelsPadResponseFilteredBodyModel'
+        ProposedOrdersUngroupedExportRequest:
+          $ref: '#/components/schemas/ExportProposedOrdersBusinessRulesModelProposedOrderResponseFilteredBodyModel'
         PositionsExportRequest:
           $ref: '#/components/schemas/ExportPositionBusinessRulesModelPortfolioPositionsResponseFilteredBodyModel'
         SimulationPositionsExportRequest:
@@ -3763,6 +3809,18 @@ components:
           format: double
           readOnly: true
       description: The data model representing the projected income section.
+    ProposedOrderResponseSortingRuleModel:
+      type: object
+      properties:
+        Property:
+          type: string
+          description: Field name that will be used to sort
+          nullable: true
+        Direction:
+          type: string
+          description: The direction that should be applied. 'Asc' or 'Desc'
+          nullable: true
+          example: Asc
     QuickfilterConditionModel:
       type: object
       properties:
@@ -3777,6 +3835,35 @@ components:
             type: object
             format: Any object
           nullable: true
+    RebalancingAssigneeSelection:
+      required:
+      - Id
+      - Type
+      type: object
+      properties:
+        Id:
+          type: integer
+          description: Unique identifier for the assignee.
+          format: int32
+        ModelId:
+          type: integer
+          description: Gets or sets the identifier for the model.
+          format: int32
+          nullable: true
+        Type:
+          $ref: '#/components/schemas/AssigneeType'
+        UnderlyingEntities:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnderlyingEntitySelection'
+          description: List of underlying entities related to the assignee selection.
+          nullable: true
+        IsConfirmed:
+          type: boolean
+          description: Gets or sets a value indicating whether the assignee selection
+            is already confirmed.
+      description: Represents an assignee selection which is the subject of a rebalancing
+        operation.
     RegionPatchRequestJsonPatchDocument:
       title: RegionPatchRequest
       type: array
@@ -5239,6 +5326,19 @@ components:
           $ref: '#/components/schemas/TransactionsPadsBusinessRulesModel'
         Paging:
           $ref: '#/components/schemas/PaginationModelWithBody'
+    UnderlyingEntitySelection:
+      required:
+      - Id
+      - Type
+      type: object
+      properties:
+        Id:
+          type: integer
+          description: Identifier of the underlying entity
+          format: int32
+        Type:
+          $ref: '#/components/schemas/AssigneeType'
+      description: ''
     UserAccessLevel:
       enum:
       - BranchAdmin

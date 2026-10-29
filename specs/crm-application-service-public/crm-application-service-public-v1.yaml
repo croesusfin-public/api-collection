@@ -851,6 +851,73 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /crm/api/v1/securities/{securityId}/profiles/bulk:
+    patch:
+      tags:
+      - Profiles
+      summary: Update the value of one or more profile values for a given security.
+      description: "`min ref 2027-04 (90.55)`\r\n</br>\r\n</br>\r\n            Update\
+        \ the value of one or more profile values for a given security.The\r\n   \
+        \         profile values are identified by their ProfileId.The profile values\
+        \ are\r\n            updated in bulk."
+      operationId: patchBySecurityId
+      parameters:
+      - name: securityId
+        in: path
+        description: A single security id
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        description: The list of the patches and their associated ProfileId.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProfilesPatchRequest'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProfilesPatchRequest'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProfilesPatchRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponseModel'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /crm/api/v1/Relationships/{relationshipId}/Services:
     get:
       tags:
