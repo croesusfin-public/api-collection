@@ -1718,6 +1718,47 @@ components:
           $ref: '#/components/schemas/ExportDashboardsBusinessRulesModel'
         Paging:
           $ref: '#/components/schemas/PaginationModelWithBody'
+    ExportModelAssigneesBusinessRulesModel:
+      required:
+      - ModelId
+      type: object
+      properties:
+        ModelId:
+          type: integer
+          description: The model whose assignees are exported.
+          format: int32
+        AssigneeType:
+          $ref: '#/components/schemas/AssigneeType'
+        SourceIds:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: "Ids of the items linked to the Models module. Requires Croesus.PortfolioApplicationService.Core.Contracts.V1.Rules.ModelsPad.ExportModelAssigneesBusinessRulesModel.SourceType.\r\
+            \nWhen PREF_MODEL_FILTER_ASSIGNEES_ON_LINK is enabled, only the assignees\
+            \ covering these items are exported."
+          nullable: true
+        SourceType:
+          $ref: '#/components/schemas/SourceContextType'
+      description: "Business rules for exporting the assigned portfolios (assignees)\
+        \ of a model (api/v1/export).\r\nCarries the same context as the Models module\
+        \ \"Assigned portfolios\" grid\r\n(GET models-pad/{modelId}/assignees) at\
+        \ the time of the export."
+    ExportModelAssigneesBusinessRulesModelModelAssigneeResponseFilteredBodyModel:
+      type: object
+      properties:
+        FilterRules:
+          type: string
+          nullable: true
+        SortingRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModelAssigneeResponseSortingRuleModel'
+          nullable: true
+        BusinessRules:
+          $ref: '#/components/schemas/ExportModelAssigneesBusinessRulesModel'
+        Paging:
+          $ref: '#/components/schemas/PaginationModelWithBody'
     ExportPositionBusinessRulesModel:
       required:
       - GroupType
@@ -2018,6 +2059,8 @@ components:
           $ref: '#/components/schemas/PadsBusinessRulesModelModelsPadResponseFilteredBodyModel'
         ProposedOrdersUngroupedExportRequest:
           $ref: '#/components/schemas/ExportProposedOrdersBusinessRulesModelProposedOrderResponseFilteredBodyModel'
+        ModelAssigneesExportRequest:
+          $ref: '#/components/schemas/ExportModelAssigneesBusinessRulesModelModelAssigneeResponseFilteredBodyModel'
         PositionsExportRequest:
           $ref: '#/components/schemas/ExportPositionBusinessRulesModelPortfolioPositionsResponseFilteredBodyModel'
         SimulationPositionsExportRequest:
@@ -2528,6 +2571,18 @@ components:
             \ when it has sleeves, the models feature otherwise) or a model\r\nthat\
             \ is not a basket. PREF_ENABLE_MODEL is required in every case (MROX-11136)."
       description: The Metadata of a portfolio.
+    ModelAssigneeResponseSortingRuleModel:
+      type: object
+      properties:
+        Property:
+          type: string
+          description: Field name that will be used to sort
+          nullable: true
+        Direction:
+          type: string
+          description: The direction that should be applied. 'Asc' or 'Desc'
+          nullable: true
+          example: Asc
     ModelsPadResponseSortingRuleModel:
       type: object
       properties:
@@ -5291,12 +5346,13 @@ components:
           type: array
           items:
             type: integer
-            format: int32
+            format: int64
           description: "List of source ids. \r\n</br>\r\nThe list of records will\
             \ be filtered to only contain records holding or linked to at least one\
-            \ of the designated source ids(Account, Client, Relationship or Security).\r\
-            \n\r\n</br>The sourceType parameter is required for it to work.\r\n\r\n\
-            </br>By default, a maximum of 50 ids can be included."
+            \ of the designated source ids.\r\n\r\n</br>The sourceType parameter is\
+            \ required for it to work.\r\n\r\n</br>By default, a maximum of 50 ids\
+            \ can be included.\r\n\r\n</br>Hides the base int property: position source\
+            \ ids are 64-bit."
           nullable: true
         SourceType:
           $ref: '#/components/schemas/SourceContextType'
