@@ -514,6 +514,88 @@ components:
           description: Always null since its not an error
           nullable: true
       description: Standard generic response wrapper
+    AssetClassDataModel:
+      required:
+      - ClassDescription
+      - ColorCode
+      type: object
+      properties:
+        AssetClassId:
+          type: integer
+          description: The id of the asset class.
+          format: int32
+        ClassDescription:
+          type: string
+          description: The Description of the Asset Class.
+          nullable: true
+        ClassShortDescription:
+          type: string
+          description: The short description of the asset class.
+          nullable: true
+        InvestedCapital:
+          type: number
+          description: The amount of capital invested in the asset class.
+          format: double
+        MarketValue:
+          type: number
+          description: The market value of the asset class.
+          format: double
+        MarketValuePercentage:
+          type: number
+          description: The percentage of the market value of the asset class.
+          format: double
+        InvestedCapitalGainLoss:
+          type: number
+          description: The capital gain or loss of the asset class.
+          format: double
+        AccruedInterestDividends:
+          type: number
+          description: The accrued interest dividends of the asset class.
+          format: double
+        AnnualIncome:
+          type: number
+          description: The annual income of the asset class.
+          format: double
+        BookValue:
+          type: number
+          description: The book value of the asset class.
+          format: double
+        BookValueGainLoss:
+          type: number
+          description: The capital gain or loss of the book value of the asset class.
+          format: double
+        ObjectiveMin:
+          type: number
+          description: The minimum objective of the asset class.
+          format: double
+          nullable: true
+        ObjectiveMax:
+          type: number
+          description: The maximum objective of the asset class.
+          format: double
+          nullable: true
+        ObjectiveTarget:
+          type: number
+          description: The target objective of the asset class.
+          format: double
+          nullable: true
+        ObjectiveRating:
+          $ref: '#/components/schemas/AssetClassObjectiveRating'
+        ColorCode:
+          type: string
+          description: The color code of the asset class.
+          nullable: true
+        Positions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModelPositionDataModel'
+          description: The list of positions in the asset class.
+          nullable: true
+        PositionCount:
+          type: integer
+          description: The number of positions in the asset class.
+          format: int32
+      description: The data for the asset class section of a model's portfolio.
     AssetClassGroupModel:
       required:
       - ClassDescription
@@ -593,6 +675,16 @@ components:
           format: int32
           readOnly: true
       description: The data for the asset class section of a portfolio.
+    AssetClassObjectiveRating:
+      enum:
+      - AboveMaximum
+      - AboveTarget
+      - OnTarget
+      - BelowTarget
+      - BelowMinimum
+      type: string
+      description: The different objective ratings for an asset class relative to
+        minimum, maximum, and target values.
     AssetMixConditionFieldModel:
       type: object
       properties:
@@ -1759,6 +1851,70 @@ components:
           $ref: '#/components/schemas/ExportModelAssigneesBusinessRulesModel'
         Paging:
           $ref: '#/components/schemas/PaginationModelWithBody'
+    ExportModelPositionsBusinessRulesModel:
+      required:
+      - ModelId
+      type: object
+      properties:
+        ModelId:
+          type: integer
+          description: The model whose positions are exported.
+          format: int32
+        Currency:
+          type: string
+          description: The currency of the positions. When null or empty, the default
+            currency of the model is used.
+          nullable: true
+        AssetAllocationId:
+          type: integer
+          description: The asset allocation id of the positions. When null, the default
+            asset allocation is used.
+          format: int32
+          nullable: true
+        AssetAllocationType:
+          $ref: '#/components/schemas/AssetMixStructureType'
+        IncludeFundAllocation:
+          type: boolean
+          description: Indicates whether the fund allocation is included.
+        GroupType:
+          $ref: '#/components/schemas/PortfolioGroupType'
+        AssetClassId:
+          type: integer
+          description: The asset class of the exported positions. Required when grouped
+            by asset class.
+          format: int32
+          nullable: true
+        IncludeZeroPositions:
+          type: boolean
+          description: Indicates whether the zero positions are included.
+        PortfolioState:
+          $ref: '#/components/schemas/ModelPortfolioStateData'
+        SelectedPositions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModelPositionKey'
+          description: "The positions to export (the selected rows, or the rows of\
+            \ the grid), looked up in the sub-positions of\r\nthe sub-models and baskets\
+            \ too. When null or empty, all the positions of the model are exported."
+          nullable: true
+      description: "Business rules for exporting (api/v1/export) the positions of\
+        \ a model: the model and the portfolio parameters of the\r\nmodel positions\
+        \ grid (GET /models/{modelId}/portfolio) plus the rows to export."
+    ExportModelPositionsBusinessRulesModelModelPositionDataModelFilteredBodyModel:
+      type: object
+      properties:
+        FilterRules:
+          type: string
+          nullable: true
+        SortingRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModelPositionDataModelSortingRuleModel'
+          nullable: true
+        BusinessRules:
+          $ref: '#/components/schemas/ExportModelPositionsBusinessRulesModel'
+        Paging:
+          $ref: '#/components/schemas/PaginationModelWithBody'
     ExportPositionBusinessRulesModel:
       required:
       - GroupType
@@ -2021,6 +2177,32 @@ components:
           $ref: '#/components/schemas/ExportProposedOrdersBusinessRulesModel'
         Paging:
           $ref: '#/components/schemas/PaginationModelWithBody'
+    ExportRebalancingAssigneesBusinessRulesModel:
+      type: object
+      properties:
+        RebalancingId:
+          type: integer
+          description: The rebalancing whose assignees are exported.
+          format: int32
+      description: "Business rules for exporting (api/v1/export) the assignees of\
+        \ the assignee selection step (portfolios to\r\nrebalance) of a rebalancing:\
+        \ the rebalancing route parameter of the assignees grid\r\n(GET /rebalancings/{rebalancingId}/assignees),\
+        \ which has no business rules of its own."
+    ExportRebalancingAssigneesBusinessRulesModelRebalancingAssigneeResponseFilteredBodyModel:
+      type: object
+      properties:
+        FilterRules:
+          type: string
+          nullable: true
+        SortingRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/RebalancingAssigneeResponseSortingRuleModel'
+          nullable: true
+        BusinessRules:
+          $ref: '#/components/schemas/ExportRebalancingAssigneesBusinessRulesModel'
+        Paging:
+          $ref: '#/components/schemas/PaginationModelWithBody'
     ExportRequest:
       required:
       - Columns
@@ -2059,8 +2241,12 @@ components:
           $ref: '#/components/schemas/PadsBusinessRulesModelModelsPadResponseFilteredBodyModel'
         ProposedOrdersUngroupedExportRequest:
           $ref: '#/components/schemas/ExportProposedOrdersBusinessRulesModelProposedOrderResponseFilteredBodyModel'
+        ModelPositionsExportRequest:
+          $ref: '#/components/schemas/ExportModelPositionsBusinessRulesModelModelPositionDataModelFilteredBodyModel'
         ModelAssigneesExportRequest:
           $ref: '#/components/schemas/ExportModelAssigneesBusinessRulesModelModelAssigneeResponseFilteredBodyModel'
+        RebalancingAssigneesExportRequest:
+          $ref: '#/components/schemas/ExportRebalancingAssigneesBusinessRulesModelRebalancingAssigneeResponseFilteredBodyModel'
         PositionsExportRequest:
           $ref: '#/components/schemas/ExportPositionBusinessRulesModelPortfolioPositionsResponseFilteredBodyModel'
         SimulationPositionsExportRequest:
@@ -2178,6 +2364,23 @@ components:
       - Representative
       - User
       - Empty
+      type: string
+    FinancialInstrument:
+      enum:
+      - None
+      - Stock
+      - MutualFund
+      - Bond
+      - Option
+      - Basket
+      - Index
+      - Currency
+      - Cash
+      - Future
+      - Other
+      - ExchangeTradedFund
+      - TrustUnit
+      - AssetBackedSecurity
       type: string
     FirmResponse:
       required:
@@ -2583,6 +2786,504 @@ components:
           description: The direction that should be applied. 'Asc' or 'Desc'
           nullable: true
           example: Asc
+    ModelPortfolioStateData:
+      type: object
+      properties:
+        Id:
+          type: integer
+          description: The model identifier.
+          format: int64
+          nullable: true
+        ModelName:
+          type: string
+          description: The model name.
+          nullable: true
+        FullName:
+          type: string
+          description: The model full name.
+          nullable: true
+        ModelNumber:
+          type: string
+          description: The model number.
+          nullable: true
+        Summary:
+          $ref: '#/components/schemas/ModelPortfolioSummary'
+        AvailableCurrencies:
+          type: array
+          items:
+            type: string
+          description: Available currencies.
+          nullable: true
+        Metadata:
+          $ref: '#/components/schemas/MetadataModel'
+        Positions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModelPositionDataModel'
+          description: The positions of the model portfolio.
+          nullable: true
+        AssetClasses:
+          type: array
+          items:
+            $ref: '#/components/schemas/AssetClassDataModel'
+          description: The asset classes of the portfolio.
+          nullable: true
+        RiskRatingData:
+          $ref: '#/components/schemas/RiskRatingDataModel'
+        IsModelActive:
+          type: boolean
+          description: "Indicates whether the model is active. Carried from the initial\
+            \ load so the edit\r\nflow can round-trip the full response without a\
+            \ database call."
+        IsSubModel:
+          type: boolean
+          description: "Indicates whether this model is referenced as a submodel by\
+            \ at least one other model. Carried\r\nfrom the initial load so the edit\
+            \ flow can round-trip the full response without a database call."
+        MutualFundAllocationState:
+          type: boolean
+          description: "Indicates whether mutual fund allocation data is available\
+            \ for this portfolio.\r\nCarried from the initial load so the edit flow\
+            \ can round-trip without a database call."
+        IncludeZeroPositions:
+          type: boolean
+          description: "Indicates whether zero-quantity positions were included when\
+            \ this session was loaded. Fixed for\r\nthe life of the session."
+      description: "DTO representing the reconstructable state of a model portfolio\
+        \ session.\r\nMirrors the data fields of Croesus.PortfolioApplicationService.Core.Contracts.V1.Responses.ModelPortfolio.ModelPortfolioResponse,\
+        \ excluding session-management\r\nfields (`RunningActions` and `Checksum`)\
+        \ which are carried separately in the request."
+    ModelPortfolioSummary:
+      type: object
+      properties:
+        AccruedInterestDividends:
+          type: number
+          description: Accrued interest / dividends
+          format: double
+        AnnualIncome:
+          type: number
+          description: Annual income
+          format: double
+        AverageModifiedDuration:
+          type: number
+          description: Average modified duration
+          format: double
+        MarketValue:
+          type: number
+          description: Market value of the model's positions
+          format: double
+        AverageBeta:
+          type: number
+          description: Average beta of the model's positions
+          format: double
+          nullable: true
+        NumberOfPositions:
+          type: integer
+          description: Number of positions in the model
+          format: int32
+      description: The summary information of a model portfolio
+    ModelPositionDataModel:
+      type: object
+      properties:
+        PositionId:
+          type: integer
+          description: Position Id
+          format: int64
+        SecurityId:
+          type: integer
+          description: Security identifier
+          format: int32
+        HasNote:
+          type: boolean
+          description: Indicates if the position has notes
+        Warning:
+          type: boolean
+          description: Indicates if there is a warning on this position
+        IsModel:
+          type: boolean
+          description: Indicates if the position is a submodel
+        IsBasket:
+          type: boolean
+          description: Indicates if the position is a basket
+        SubPositions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModelPositionDataModel'
+          description: Underlying positions if position is a basket or submodel
+          nullable: true
+        HasSubstitution:
+          type: boolean
+          description: Indicates if the position has substitutions
+        ComplementSubstitutes:
+          $ref: '#/components/schemas/SecuritySubstitutesDataModel'
+        ReplacementSubstitutes:
+          $ref: '#/components/schemas/SecuritySubstitutesDataModel'
+        AlternativeSubstitutes:
+          $ref: '#/components/schemas/SecuritySubstitutesDataModel'
+        AlternativeReplacementSubstitutes:
+          $ref: '#/components/schemas/SecuritySubstitutesDataModel'
+        HasExcessCash:
+          type: boolean
+          description: Indicates if position has excess cash security
+        ExcessCashSecurityId:
+          type: integer
+          description: "Security identifier of the excess cash security assigned to\
+            \ this position, or null when none is defined.\r\n`min ref 2026-12 (90.54)`"
+          format: int32
+          nullable: true
+        ModelTargetPercent:
+          type: number
+          description: Model target percentage
+          format: double
+          nullable: true
+        ModelMinPercent:
+          type: number
+          description: Model minimum percentage
+          format: double
+          nullable: true
+        ModelMaxPercent:
+          type: number
+          description: Model maximum percentage
+          format: double
+          nullable: true
+        TotalValuePercentageMarket:
+          type: number
+          description: Total value percentage in market
+          format: double
+        ModelMinMarketPercent:
+          type: number
+          description: Model minimum market percentage
+          format: double
+        ModelMaxMarketPercent:
+          type: number
+          description: Model maximum market percentage
+          format: double
+        ModelLowerTolerancePercent:
+          type: number
+          description: Represents the lower tolerance percentage for the position
+          format: double
+          nullable: true
+        ModelUpperTolerancePercent:
+          type: number
+          description: Represents the upper tolerance percentage for the position
+          format: double
+          nullable: true
+        SecurityDescription:
+          type: string
+          description: Security description
+          nullable: true
+        Symbol:
+          type: string
+          description: Security symbol
+          nullable: true
+        AssetAllocationData:
+          type: array
+          items:
+            $ref: '#/components/schemas/PositionAssetAllocationModel'
+          description: The asset allocation data of the position.
+          nullable: true
+        MarketPrice:
+          type: number
+          description: Market price of the security
+          format: double
+        RepresentativeId:
+          type: integer
+          description: Representative identifier
+          format: int32
+        RepresentativeNumber:
+          type: string
+          description: Representative number
+          nullable: true
+        ModifiedDuration:
+          type: number
+          description: Modified duration
+          format: double
+          nullable: true
+        Beta:
+          type: number
+          description: Beta coefficient
+          format: double
+          nullable: true
+        BidPrice:
+          type: number
+          description: Bid price
+          format: double
+        CallDate:
+          type: string
+          description: Call date
+          format: date-time
+          nullable: true
+        CalculationFactor:
+          type: integer
+          description: Calculation factor
+          format: int32
+        ConversionDate:
+          type: string
+          description: Conversion Date
+          format: date-time
+          nullable: true
+        Cusip:
+          type: string
+          description: CUSIP identifier
+          nullable: true
+        ClosePrice:
+          type: number
+          description: Close price
+          format: double
+        Dividend:
+          type: number
+          description: Dividend amount
+          format: double
+          nullable: true
+        InterestDividendCurrency:
+          type: string
+          description: Interest dividend currency
+          nullable: true
+        DividendExDate:
+          type: string
+          description: Dividend Ex Date
+          format: date-time
+          nullable: true
+        DividendPaymentDate:
+          type: string
+          description: Dividend payment date
+          format: date-time
+          nullable: true
+        FinancialInstrument:
+          $ref: '#/components/schemas/FinancialInstrument'
+        FinancialInstrumentDescription:
+          type: string
+          description: The financial instrument description.
+          nullable: true
+        DisplayFrequency:
+          type: number
+          description: Display frequency
+          format: double
+        Isin:
+          type: string
+          description: ISIN
+          nullable: true
+        IssueDate:
+          type: string
+          description: Issue date
+          format: date-time
+          nullable: true
+        LastUpdateDate:
+          type: string
+          description: Last update date
+          format: date-time
+          nullable: true
+        Market:
+          type: string
+          description: Market
+          nullable: true
+        MaturityDate:
+          type: string
+          description: Maturity date
+          format: date-time
+          nullable: true
+        DividendRecordDate:
+          type: string
+          description: Dividend record date
+          format: date-time
+          nullable: true
+        Region:
+          type: string
+          description: Security region
+          nullable: true
+        IndustryCodeDescription:
+          type: string
+          description: Industry code description
+          nullable: true
+        SubCategoryDescription:
+          type: string
+          description: Sub-category description
+          nullable: true
+        PriceCurrency:
+          type: string
+          description: Price currency
+          nullable: true
+        SecurityCurrency:
+          type: string
+          description: Security currency
+          nullable: true
+        SecuFirm:
+          type: string
+          description: SecuFirm identifier
+          nullable: true
+        RiskRating:
+          type: integer
+          description: The risk rating of the position.
+          format: int32
+          nullable: true
+        RiskRatingForDisplay:
+          type: string
+          description: VMD risk rating value
+          nullable: true
+        RQSRiskRatingDescription:
+          type: string
+          description: RQS risk rating description
+          nullable: true
+        SubModelNumber:
+          type: string
+          description: The model sub-model number if the position is a sub-model
+          nullable: true
+        SubModelType:
+          type: string
+          description: The model type of the position if the position is a sub-model
+          nullable: true
+        SubModelName:
+          type: string
+          description: The model name if the position is a sub-model
+          nullable: true
+        ModelId:
+          type: integer
+          description: The model id of the model to which the position belongs.
+          format: int32
+          nullable: true
+        MainCategoryDescription:
+          type: string
+          description: Gets the description of the main category classification for
+            this model position.
+          nullable: true
+        MainCategoryId:
+          type: integer
+          description: "Numeric main category identifier. Mirrors the BL's `MAINCATEGORY`\
+            \ field, the first key of\r\nthe `BasicCategory` sort order. Carried in\
+            \ the DTO so the state manager can re-sort the\r\nin-memory positions\
+            \ list after an add to match the order returned by the GET endpoint."
+          format: int32
+          nullable: true
+        CategoryDisplayOrder:
+          type: integer
+          description: "Display order of the position's own asset category (`B_CATEGO.DISPLAYORDER`),\
+            \ the second\r\nkey of the BL's `BasicCategory` sort order. Carried alongside\
+            \ Croesus.PortfolioApplicationService.Core.Contracts.V1.Models.Models.ModelPositionDataModel.MainCategoryId\r\
+            \nso the state manager's re-sort matches the GET order for positions sharing\
+            \ a main category."
+          format: int32
+          nullable: true
+        AskPrice:
+          type: number
+          description: The ask price
+          format: double
+        PercentageVariation:
+          type: number
+          description: The percentage variation
+          format: double
+        ClientShortName:
+          type: string
+          description: The client short name
+          nullable: true
+        MarketYield:
+          type: number
+          description: Market yield
+          format: double
+        YieldToMaturity:
+          type: number
+          description: Yield to maturity (nominal)
+          format: double
+          nullable: true
+        AccruedInterestDividend:
+          type: number
+          description: Accrued interest or dividend
+          format: double
+        AnnualIncome:
+          type: number
+          description: Annual income
+          format: double
+        InterestPortion:
+          type: number
+          description: Interest portion
+          format: double
+          nullable: true
+        MarketValue:
+          type: number
+          description: Market value of the position.
+          format: double
+        Interest:
+          type: number
+          description: Interest amount
+          format: double
+        Quantity:
+          type: number
+          description: Quantity of the position
+          format: double
+        AccountCheckDigit:
+          type: string
+          description: Check digit
+          nullable: true
+        UnderlyingSecurity:
+          type: string
+          description: Underlying security
+          nullable: true
+        FirstCouponDate:
+          type: string
+          description: First coupon date
+          format: date-time
+          nullable: true
+        PrincipalFactor:
+          type: number
+          description: Principal factor
+          format: double
+        CompoundMethod:
+          type: string
+          description: Compound method
+          nullable: true
+        MaturityPrice:
+          type: number
+          description: Maturity price
+          format: double
+        StrikePrice:
+          type: number
+          description: Strike price
+          format: double
+          nullable: true
+        OptionType:
+          $ref: '#/components/schemas/OptionType'
+        WarningMessage:
+          type: string
+          description: Warning message for the position
+          nullable: true
+        IsBlockedSecurity:
+          type: boolean
+          description: Indicates whether the security is blocked.
+        IsBlockedPosition:
+          type: boolean
+          description: Indicates whether the position is blocked.
+      description: Represents a position within a model portfolio
+    ModelPositionDataModelSortingRuleModel:
+      type: object
+      properties:
+        Property:
+          type: string
+          description: Field name that will be used to sort
+          nullable: true
+        Direction:
+          type: string
+          description: The direction that should be applied. 'Asc' or 'Desc'
+          nullable: true
+          example: Asc
+    ModelPositionKey:
+      type: object
+      properties:
+        PositionId:
+          type: integer
+          description: The position id (0 for a position not saved yet).
+          format: int64
+        ModelId:
+          type: integer
+          description: The `ModelId` of the position row, which is null on the sub-model
+            and basket rows of the asset class view.
+          format: int32
+          nullable: true
+        SecurityId:
+          type: integer
+          description: The security of the position.
+          format: int32
+      description: "Identifies a position of a model grid: its position id, the model\
+        \ it belongs to and its security. An unsaved\r\nposition has no position id\
+        \ yet, so the three together are the key, as for the rows of the grid."
     ModelsPadResponseSortingRuleModel:
       type: object
       properties:
@@ -2730,6 +3431,14 @@ components:
       - OnTarget
       type: string
       description: The different objective ratings.
+    OptionType:
+      enum:
+      - None
+      - Call
+      - Put
+      - Warrant
+      - Right
+      type: string
     PadsBusinessRulesModel:
       type: object
       properties:
@@ -3046,6 +3755,11 @@ components:
           type: string
           description: The number of the sleeve account associated to the position,
             if any.
+          nullable: true
+        SleeveName:
+          type: string
+          description: The name of the sleeve associated to the position, if any,
+            in the requested culture.
           nullable: true
         ProjectedIncomeData:
           $ref: '#/components/schemas/ProjectedIncomeModel'
@@ -3890,6 +4604,18 @@ components:
             type: object
             format: Any object
           nullable: true
+    RebalancingAssigneeResponseSortingRuleModel:
+      type: object
+      properties:
+        Property:
+          type: string
+          description: Field name that will be used to sort
+          nullable: true
+        Direction:
+          type: string
+          description: The direction that should be applied. 'Asc' or 'Desc'
+          nullable: true
+          example: Asc
     RebalancingAssigneeSelection:
       required:
       - Id
@@ -4782,6 +5508,24 @@ components:
           format: double
           nullable: true
       description: The data for the security risk rating allocation of the portfolio.
+    SecuritySubstitutesDataModel:
+      type: object
+      properties:
+        Has:
+          type: boolean
+          description: Whether substitutes are available.
+        Count:
+          type: integer
+          description: The count of substitutes.
+          format: int32
+        IsInConflict:
+          type: boolean
+          description: Whether there is a conflict with the substitutes.
+        ConflictMessage:
+          type: string
+          description: The conflict message, if any.
+          nullable: true
+      description: The data model for security substitutes information.
     SetImpersonateSelectionRequest:
       required:
       - FilterType
