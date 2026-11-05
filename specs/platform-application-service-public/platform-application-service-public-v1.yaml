@@ -878,6 +878,18 @@ components:
           description: Always null since its not an error
           nullable: true
       description: Standard generic response wrapper
+    CashMovementOrderResponseSortingRuleModel:
+      type: object
+      properties:
+        Property:
+          type: string
+          description: Field name that will be used to sort
+          nullable: true
+        Direction:
+          type: string
+          description: The direction that should be applied. 'Asc' or 'Desc'
+          nullable: true
+          example: Asc
     ClassPatchRequestJsonPatchDocument:
       title: ClassPatchRequest
       type: array
@@ -1774,6 +1786,34 @@ components:
             should be addressed
           nullable: true
       description: Standard generic response for errors cases
+    ExportCashMovementBusinessRulesModel:
+      type: object
+      properties:
+        RebalancingId:
+          type: integer
+          description: The rebalancing whose cash movement orders are exported.
+          format: int32
+        Assignee:
+          $ref: '#/components/schemas/RebalancingAssigneeSelection'
+      description: "Business rules for exporting (api/v1/export) the cash movement\
+        \ orders of the projected portfolios step\r\nof a rebalancing: the rebalancing\
+        \ route parameter plus the assignee of the cash movement orders grid\r\n(GET\
+        \ /rebalancings/{rebalancingId}/projectedportfolios/cashmovementorders)."
+    ExportCashMovementBusinessRulesModelCashMovementOrderResponseFilteredBodyModel:
+      type: object
+      properties:
+        FilterRules:
+          type: string
+          nullable: true
+        SortingRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/CashMovementOrderResponseSortingRuleModel'
+          nullable: true
+        BusinessRules:
+          $ref: '#/components/schemas/ExportCashMovementBusinessRulesModel'
+        Paging:
+          $ref: '#/components/schemas/PaginationModelWithBody'
     ExportDashboardsBusinessRulesModel:
       type: object
       properties:
@@ -2142,6 +2182,31 @@ components:
           $ref: '#/components/schemas/ExportProjectedIncomeBusinessRulesModel'
         Paging:
           $ref: '#/components/schemas/PaginationModelWithBody'
+    ExportProjectedPortfolioAssigneesBusinessRulesModel:
+      type: object
+      properties:
+        RebalancingId:
+          type: integer
+          description: The rebalancing whose assignees are exported.
+          format: int32
+      description: "Business rules for exporting (api/v1/export) the assignees of\
+        \ the projected portfolios step of a rebalancing:\r\nthe rebalancing route\
+        \ parameter of the assignees grid\r\n(GET /rebalancings/{rebalancingId}/projectedportfolios/assignees)."
+    ExportProjectedPortfolioAssigneesBusinessRulesModelRebalancingAssigneeResponseFilteredBodyModel:
+      type: object
+      properties:
+        FilterRules:
+          type: string
+          nullable: true
+        SortingRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/RebalancingAssigneeResponseSortingRuleModel'
+          nullable: true
+        BusinessRules:
+          $ref: '#/components/schemas/ExportProjectedPortfolioAssigneesBusinessRulesModel'
+        Paging:
+          $ref: '#/components/schemas/PaginationModelWithBody'
     ExportProposedOrdersBusinessRulesModel:
       type: object
       properties:
@@ -2241,6 +2306,10 @@ components:
           $ref: '#/components/schemas/PadsBusinessRulesModelModelsPadResponseFilteredBodyModel'
         ProposedOrdersUngroupedExportRequest:
           $ref: '#/components/schemas/ExportProposedOrdersBusinessRulesModelProposedOrderResponseFilteredBodyModel'
+        CashMovementExportRequest:
+          $ref: '#/components/schemas/ExportCashMovementBusinessRulesModelCashMovementOrderResponseFilteredBodyModel'
+        ProjectedPortfolioAssigneesExportRequest:
+          $ref: '#/components/schemas/ExportProjectedPortfolioAssigneesBusinessRulesModelRebalancingAssigneeResponseFilteredBodyModel'
         ModelPositionsExportRequest:
           $ref: '#/components/schemas/ExportModelPositionsBusinessRulesModelModelPositionDataModelFilteredBodyModel'
         ModelAssigneesExportRequest:
@@ -4645,6 +4714,58 @@ components:
             is already confirmed.
       description: Represents an assignee selection which is the subject of a rebalancing
         operation.
+    ReferenceDictionaryEntryResponse:
+      required:
+      - Descriptions
+      - Mnemonics
+      type: object
+      properties:
+        Mnemonics:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocalizedDescriptionResponse'
+          description: "The localized mnemonics; a single language by default (the\
+            \ caller's culture, or the\r\nother language when that one is empty),\
+            \ every language with withAllLanguages. The\r\nEnglish mnemonic is the\
+            \ culture-stable code (e.g. the country code)."
+          nullable: true
+        Descriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocalizedDescriptionResponse'
+          description: "The localized descriptions; a single language by default (the\
+            \ caller's culture, or\r\nthe other language when that one is empty),\
+            \ every language with withAllLanguages."
+          nullable: true
+      description: One entry of a reference dictionary. Entries are returned in display
+        order.
+    ReferenceDictionaryEntryResponseIEnumerableStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReferenceDictionaryEntryResponse'
+          description: The real response object/>
+          nullable: true
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
     RegionPatchRequestJsonPatchDocument:
       title: RegionPatchRequest
       type: array
@@ -4896,6 +5017,15 @@ components:
           format: double
           nullable: true
       description: The data for the risk score of a portfolio.
+    SavedSelectionAction:
+      enum:
+      - Unspecified
+      - SaveAsDefault
+      - ClearSavedDefault
+      type: string
+      description: "How a set-selection request persists the selection as the user's\
+        \ saved default\r\n(PREF_USER_MANAGEMENT_* prefs), separately from applying\
+        \ it to the current session."
     ScimAuthenticationScheme:
       type: object
       properties:
@@ -5549,6 +5679,8 @@ components:
           $ref: '#/components/schemas/DiscretionaryFilter'
         Shortcut:
           $ref: '#/components/schemas/Shortcut'
+        SavedSelectionAction:
+          $ref: '#/components/schemas/SavedSelectionAction'
       description: Requête contenant les informations nécessaires pour mettre la sélection
         courante en cache
     Severity:
@@ -6369,6 +6501,12 @@ components:
         IsLicenceActivated:
           type: boolean
           description: '[IDENTITY] Indique si l''utilisateur est actif ou non.'
+        IsActive:
+          type: boolean
+          description: "Indique si l'utilisateur est actif (B_USER.ACTIF). Null quand\
+            \ la source\r\nne charge pas ce statut (listing des utilisateurs personnifiables,\
+            \ sans filtres)."
+          nullable: true
       description: Reponse contenant les informations nécessaires pour afficher une
         utilisateur
     UserResponseIEnumerableStandard:
