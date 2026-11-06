@@ -2991,6 +2991,13 @@ components:
           $ref: '#/components/schemas/SecuritySubstitutesDataModel'
         AlternativeReplacementSubstitutes:
           $ref: '#/components/schemas/SecuritySubstitutesDataModel'
+        Substitutes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModelPositionSubstituteDataModel'
+          description: "The substitute securities of the position, sorted by rank.\r\
+            \n`min ref 2027-04 (90.55)`"
+          nullable: true
         HasExcessCash:
           type: boolean
           description: Indicates if position has excess cash security
@@ -3353,6 +3360,69 @@ components:
       description: "Identifies a position of a model grid: its position id, the model\
         \ it belongs to and its security. An unsaved\r\nposition has no position id\
         \ yet, so the three together are the key, as for the rows of the grid."
+    ModelPositionSubstituteDataModel:
+      type: object
+      properties:
+        Rank:
+          type: integer
+          description: Priority of the substitute among the substitutes of the same
+            position (1 = first).
+          format: int32
+        SubstituteType:
+          $ref: '#/components/schemas/ModelPositionSubstituteType'
+        SecurityId:
+          type: integer
+          description: Identifier of the substitute security.
+          format: int32
+        Symbol:
+          type: string
+          description: Symbol of the substitute security.
+          nullable: true
+        Description:
+          type: string
+          description: Description of the substitute security, in the user's language.
+          nullable: true
+        AlternativeSecurityId:
+          type: integer
+          description: "Identifier of the alternative of the replacement, or null\
+            \ when none is defined.\r\nOnly a Croesus.PortfolioApplicationService.Core.Contracts.V1.Models.Models.ModelPositionSubstituteType.Replacement\
+            \ substitute can have one."
+          format: int32
+          nullable: true
+        AlternativeSymbol:
+          type: string
+          description: Symbol of the alternative of the replacement, or null when
+            none is defined.
+          nullable: true
+        AlternativeDescription:
+          type: string
+          description: Description of the alternative of the replacement, or null
+            when none is defined.
+          nullable: true
+        IsInConflict:
+          type: boolean
+          description: Indicates if the substitute security is in conflict.
+        ConflictMessage:
+          type: string
+          description: The conflict message of the substitute security, if any.
+          nullable: true
+        IsAlternativeInConflict:
+          type: boolean
+          description: Indicates if the alternative of the replacement is in conflict.
+        AlternativeConflictMessage:
+          type: string
+          description: The conflict message of the alternative of the replacement,
+            if any.
+          nullable: true
+      description: "A substitute security of a model position.\r\n`min ref 2027-04\
+        \ (90.55)`"
+    ModelPositionSubstituteType:
+      enum:
+      - Complement
+      - Replacement
+      - Alternative
+      type: string
+      description: The different types of substitute securities of a model position.
     ModelsPadResponseSortingRuleModel:
       type: object
       properties:

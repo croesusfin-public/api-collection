@@ -6889,7 +6889,8 @@ components:
       properties:
         AssigneeId:
           type: integer
-          description: Gets or sets the unique identifier for the assignee entity.
+          description: Gets or sets the identifier of the assignee (account, client,
+            relationship or sleeve identifier).
           format: int64
           nullable: true
         AssigneeNumber:
