@@ -2268,6 +2268,46 @@ components:
           $ref: '#/components/schemas/ExportRebalancingAssigneesBusinessRulesModel'
         Paging:
           $ref: '#/components/schemas/PaginationModelWithBody'
+    ExportRebalancingModelPositionsBusinessRulesModel:
+      type: object
+      properties:
+        RebalancingId:
+          type: integer
+          description: The rebalancing whose model positions are exported.
+          format: int32
+        IncludeZeroTargetPositions:
+          type: boolean
+          description: "Indicates whether the positions with a target of 0 are exported\
+            \ (the \"Show all\" button of the grid). By default,\r\nlike the grid,\
+            \ they are not."
+        SelectedSecurityIds:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: "The securities of the positions to export (the checked positions\
+            \ of the grid). When null or empty, all the\r\npositions are exported."
+          nullable: true
+      description: "Business rules for exporting (api/v1/export) the positions of\
+        \ the model position selection step (positions to\r\nrebalance) of a model\
+        \ rebalancing: the rebalancing route parameter of the positions grid\r\n(GET\
+        \ /rebalancings/{rebalancingId}/modelpositions) plus the state of the grid,\
+        \ which filters and selects its\r\npositions client-side."
+    ExportRebalancingModelPositionsBusinessRulesModelRebalancingModelPositionResponseFilteredBodyModel:
+      type: object
+      properties:
+        FilterRules:
+          type: string
+          nullable: true
+        SortingRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/RebalancingModelPositionResponseSortingRuleModel'
+          nullable: true
+        BusinessRules:
+          $ref: '#/components/schemas/ExportRebalancingModelPositionsBusinessRulesModel'
+        Paging:
+          $ref: '#/components/schemas/PaginationModelWithBody'
     ExportRequest:
       required:
       - Columns
@@ -2324,6 +2364,8 @@ components:
           $ref: '#/components/schemas/ExportPositionPerformancesBusinessRulesModelPositionsPerformanceResponseFilteredBodyModel'
         ProjectedIncomeExportRequest:
           $ref: '#/components/schemas/ExportProjectedIncomeBusinessRulesModelObjectFilteredBodyModel'
+        RebalancingModelPositionsExportRequest:
+          $ref: '#/components/schemas/ExportRebalancingModelPositionsBusinessRulesModelRebalancingModelPositionResponseFilteredBodyModel'
       description: Represents a request to export data, including column definitions
         and filter criteria.
     ExportScheduleDashboardsBusinessRulesModel:
@@ -4784,6 +4826,18 @@ components:
             is already confirmed.
       description: Represents an assignee selection which is the subject of a rebalancing
         operation.
+    RebalancingModelPositionResponseSortingRuleModel:
+      type: object
+      properties:
+        Property:
+          type: string
+          description: Field name that will be used to sort
+          nullable: true
+        Direction:
+          type: string
+          description: The direction that should be applied. 'Asc' or 'Desc'
+          nullable: true
+          example: Asc
     ReferenceDictionaryEntryResponse:
       required:
       - Descriptions

@@ -1854,6 +1854,72 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ObjectStandard'
+  /pfm/api/v1/models/{modelId}/assignees/bulk/deletion-request:
+    post:
+      tags:
+      - Models
+      summary: Removes accounts, clients, or relationships from a model.
+      description: "`min ref 2026-12 (90.54)`\r\n            \r\nEach assignee is\
+        \ processed independently: valid assignees are removed even if others fail.\r\
+        \nThe response contains one error message per assignee that could not be removed\r\
+        \n(not assigned to the model, locked account, or sleeve account).\r\nDuplicate\
+        \ assignees (same identifier and type) are processed once.\r\n           \
+        \ \r\nResponse codes:\r\n- `200 OK` without body: every assignee was removed.\r\
+        \n- `200 OK` with messages: the request was processed, but the assignees listed\
+        \ in the messages were not removed\r\n  (partial success, or no assignee removed\
+        \ at all). Callers must inspect the messages.\r\n- `400 Bad Request`: the\
+        \ request is invalid (empty list, more than 100 assignees, null assignee,\r\
+        \n  invalid identifier or unsupported type); no assignee is removed.\r\n-\
+        \ `403 Forbidden`: the user is not allowed to manage models, or to assign\
+        \ models of this model's type;\r\n  no assignee is removed.\r\n- `404 Not\
+        \ Found`: the model does not exist or is not accessible; no assignee is removed."
+      operationId: unassignModel
+      parameters:
+      - name: modelId
+        in: path
+        description: The unique identifier of the model to remove entities from.
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        description: Croesus.PortfolioApplicationService.Core.Contracts.Public.Models.ModelUnassignRequest
+          The unassign request containing the assignees to remove.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModelUnassignRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/ModelUnassignRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/ModelUnassignRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectStandard'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectStandard'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectStandard'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectStandard'
   /pfm/api/v1/accounts/{accountId}/portfolio/netinvestment/histories:
     get:
       tags:
@@ -6987,6 +7053,17 @@ components:
           description: Always null since its not an error
           nullable: true
       description: Standard generic response wrapper
+    ModelAssigneeSelection:
+      type: object
+      properties:
+        AssigneeId:
+          type: integer
+          description: Gets or sets the identifier for the assignee, assigned to the
+            model.
+          format: int32
+        AssigneeType:
+          $ref: '#/components/schemas/AssigneeType'
+      description: Represents an assignee selection.
     ModelContext:
       enum:
       - Account
@@ -7265,6 +7342,17 @@ components:
           description: Always null since its not an error
           nullable: true
       description: Standard generic response wrapper
+    ModelUnassignRequest:
+      type: object
+      properties:
+        Assignees:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModelAssigneeSelection'
+          description: 'The list of assignees (identifier and type: Account, Client
+            or Relationship) to remove from the model.'
+      description: Request body for removing accounts, clients, or relationships from
+        a model.
     MonthlyProjectedIncomeAssetClass:
       type: object
       properties:
