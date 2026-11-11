@@ -1362,6 +1362,71 @@ components:
           description: The localized names of the region. At least one is required.
           nullable: true
       description: Request to create a region.
+    CreateRepresentativeRequest:
+      required:
+      - BranchNumber
+      - Name
+      - RepCode
+      type: object
+      properties:
+        RepCode:
+          type: string
+          description: The representative code (IACode). Codes starting with '_' are
+            reserved.
+          nullable: true
+        Name:
+          type: string
+          description: The representative's name.
+          nullable: true
+        BranchNumber:
+          type: string
+          description: The number of the branch the representative belongs to; the
+            firm is derived from it.
+          nullable: true
+        Email:
+          type: string
+          description: The representative's email address.
+          nullable: true
+        LocalizedAddresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocalizedAddressRequest'
+          description: The bilingual address lines.
+          nullable: true
+        City:
+          type: string
+          description: The city of the representative's address.
+          nullable: true
+        Province:
+          type: string
+          description: The province of the representative's address.
+          nullable: true
+        Country:
+          type: string
+          description: The country of the representative's address.
+          nullable: true
+        ZipCode:
+          type: string
+          description: The postal code of the representative's address.
+          nullable: true
+        Phones:
+          type: array
+          items:
+            type: string
+          description: The representative's phone numbers, at most two.
+          nullable: true
+        Fax:
+          type: string
+          description: The representative's fax number.
+          nullable: true
+        DiscretionaryAccounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/DiscretionaryAccountRequest'
+          description: The GDO average-cost accounts, at most one per currency.
+          nullable: true
+      description: "Request to create a representative (investment advisor). The firm\
+        \ is derived\r\nfrom the branch; the representative number is never generated."
     CriteriaGenerator:
       enum:
       - Generic
@@ -1463,6 +1528,22 @@ components:
           description: Always null since its not an error
           nullable: true
       description: Standard generic response wrapper
+    DiscretionaryAccountRequest:
+      required:
+      - AccountNumber
+      - Currency
+      type: object
+      properties:
+        Currency:
+          type: string
+          description: The ISO 4217 currency code. Must be one of the system's configured
+            currencies.
+          nullable: true
+        AccountNumber:
+          type: string
+          description: The account number.
+          nullable: true
+      description: A discretionary (GDO average-cost) account of a firm.
     DiscretionaryAccountResponse:
       required:
       - AccountNumber
@@ -2762,6 +2843,41 @@ components:
           nullable: true
       description: Represents a node inside an asset allocation (repartition) or objective
         tree.
+    LocalizedAddressRequest:
+      required:
+      - Language
+      type: object
+      properties:
+        Language:
+          type: string
+          description: "The language of the address line. Full culture names (\"fr-CA\"\
+            , \"en-CA\")\r\nare canonical; the two-letter forms (\"fr\", \"en\") are\
+            \ also accepted."
+          nullable: true
+        Line:
+          type: string
+          description: The address line in that language.
+          nullable: true
+      description: "One line of a bilingual address. Lines sharing a language fill\
+        \ that\r\nlanguage's two line slots in the order given (at most two per language);\r\
+        \na provided language overwrites both of its slots, an absent language is\r\
+        \nleft untouched."
+    LocalizedAddressResponse:
+      required:
+      - Language
+      - Line
+      type: object
+      properties:
+        Language:
+          type: string
+          description: The culture of the address line (fr-CA or en-CA).
+          nullable: true
+        Line:
+          type: string
+          description: The address line in that language.
+          nullable: true
+      description: "One line of a bilingual address. A language's lines appear in\
+        \ slot order;\r\nempty slots are skipped."
     LocalizedDescriptionRequest:
       required:
       - Description
@@ -5061,6 +5177,17 @@ components:
           description: Always null since its not an error
           nullable: true
       description: Standard generic response wrapper
+    RepresentativePatchRequestJsonPatchDocument:
+      title: RepresentativePatchRequest
+      type: array
+      items:
+        $ref: '#/components/schemas/PatchRequestOperation'
+      description: "Available operations.<ul>\r\n  <li>Name [ Replace ]</li>\r\n \
+        \ <li>BranchNumber [ Replace ]</li>\r\n  <li>Email [ Replace ]</li>\r\n  <li>LocalizedAddresses\
+        \ [ Replace ]</li>\r\n  <li>City [ Replace ]</li>\r\n  <li>Province [ Replace\
+        \ ]</li>\r\n  <li>Country [ Replace ]</li>\r\n  <li>ZipCode [ Replace ]</li>\r\
+        \n  <li>Phones [ Replace ]</li>\r\n  <li>Fax [ Replace ]</li>\r\n  <li>DiscretionaryAccounts\
+        \ [ Replace ]</li>\r\n</ul>"
     RepresentativeResponse:
       required:
       - Branch
@@ -5072,7 +5199,7 @@ components:
         RepresentativeId:
           type: integer
           description: Identifiant du représentant
-          format: int32
+          format: int64
         RepresentativeNumber:
           type: string
           description: Numéro du représentant
@@ -5082,6 +5209,69 @@ components:
         Name:
           type: string
           description: Nom du représentant associé au code de représentant
+          nullable: true
+        FirmId:
+          type: integer
+          description: "The identifier of the representative's firm. Only populated\
+            \ when the\r\nrequest asks for values."
+          format: int64
+          nullable: true
+        Email:
+          type: string
+          description: "The representative's email address. Only populated when the\
+            \ request\r\nasks for values."
+          nullable: true
+        LocalizedAddresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocalizedAddressResponse'
+          description: "The bilingual address lines, one entry per non-empty line\
+            \ in slot\r\norder (fr-CA then en-CA). Only populated when the request\
+            \ asks for\r\nvalues."
+          nullable: true
+        City:
+          type: string
+          description: "The city of the representative's address. Only populated when\
+            \ the\r\nrequest asks for values."
+          nullable: true
+        Province:
+          type: string
+          description: "The province of the representative's address. Only populated\
+            \ when the\r\nrequest asks for values."
+          nullable: true
+        Country:
+          type: string
+          description: "The country of the representative's address. Only populated\
+            \ when the\r\nrequest asks for values."
+          nullable: true
+        ZipCode:
+          type: string
+          description: "The postal code of the representative's address. Only populated\
+            \ when\r\nthe request asks for values."
+          nullable: true
+        Phones:
+          type: array
+          items:
+            type: string
+          description: "The representative's phone numbers (at most two, empty slots\r\
+            \nskipped). Only populated when the request asks for values."
+          nullable: true
+        Fax:
+          type: string
+          description: "The representative's fax number. Only populated when the request\
+            \ asks\r\nfor values."
+          nullable: true
+        IsDiscretionary:
+          type: boolean
+          description: "Whether the representative is discretionary (read-only). Only\r\
+            \npopulated when the request asks for values."
+          nullable: true
+        DiscretionaryAccounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/DiscretionaryAccountResponse'
+          description: "The GDO average-cost accounts, at most one per currency. Only\r\
+            \npopulated when the request asks for values."
           nullable: true
       description: Reponse contenant les informations nécessaires pour afficher un
         code de représentant
@@ -5103,6 +5293,85 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/RepresentativeResponse'
+          description: The real response object/>
+          nullable: true
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    RepresentativeResponseStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          $ref: '#/components/schemas/RepresentativeResponse'
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    RepresentativeUserResponse:
+      required:
+      - Active
+      - FirstName
+      - LastName
+      - StationId
+      - UserId
+      type: object
+      properties:
+        UserId:
+          type: integer
+          description: The user identifier.
+          format: int64
+        StationId:
+          type: string
+          description: The user's station identifier.
+          nullable: true
+        FirstName:
+          type: string
+          description: The user's first name.
+          nullable: true
+        LastName:
+          type: string
+          description: The user's last name.
+          nullable: true
+        Active:
+          type: boolean
+          description: Whether the user is active.
+      description: A user assigned to a representative.
+    RepresentativeUserResponseIEnumerableStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          type: array
+          items:
+            $ref: '#/components/schemas/RepresentativeUserResponse'
           description: The real response object/>
           nullable: true
         Messages:
