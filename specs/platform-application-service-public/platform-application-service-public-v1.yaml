@@ -878,6 +878,18 @@ components:
           description: Always null since its not an error
           nullable: true
       description: Standard generic response wrapper
+    CashManagementResponseSortingRuleModel:
+      type: object
+      properties:
+        Property:
+          type: string
+          description: Field name that will be used to sort
+          nullable: true
+        Direction:
+          type: string
+          description: The direction that should be applied. 'Asc' or 'Desc'
+          nullable: true
+          example: Asc
     CashMovementOrderResponseSortingRuleModel:
       type: object
       properties:
@@ -1867,6 +1879,53 @@ components:
             should be addressed
           nullable: true
       description: Standard generic response for errors cases
+    ExportCashManagementBusinessRulesModel:
+      type: object
+      properties:
+        RebalancingId:
+          type: integer
+          description: The rebalancing whose cash management is exported.
+          format: int32
+        AllAssignees:
+          type: boolean
+          description: Whether all the assignees of the rebalancing are selected,
+            in which case the assignee selections are ignored.
+          nullable: true
+        AssigneeSelections:
+          type: array
+          items:
+            $ref: '#/components/schemas/RebalancingAssigneeSelection'
+          description: "The assignees whose accounts (or sleeves) are exported when\
+            \ not all the assignees are selected. As in the\r\ncash management grid,\
+            \ an empty list exports no account, while a missing list (null) exports\
+            \ the accounts of\r\nall the assignees of the rebalancing."
+          nullable: true
+        UnsavedDepositWithdrawalAmounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnsavedDepositWithdrawalAmount'
+          description: The deposit/withdrawal amounts entered in the grid but not
+            saved yet, exported instead of the saved ones.
+          nullable: true
+      description: "Business rules for exporting (api/v1/export) the cash management\
+        \ of the assignee selection step of a\r\nrebalancing: the rebalancing route\
+        \ parameter plus the business rules of the cash management grid\r\n(POST /rebalancings/{rebalancingId}/assignees/cashmanagements/filtered),\
+        \ and the amounts entered in the grid\r\nbut not saved yet."
+    ExportCashManagementBusinessRulesModelCashManagementResponseFilteredBodyModel:
+      type: object
+      properties:
+        FilterRules:
+          type: string
+          nullable: true
+        SortingRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/CashManagementResponseSortingRuleModel'
+          nullable: true
+        BusinessRules:
+          $ref: '#/components/schemas/ExportCashManagementBusinessRulesModel'
+        Paging:
+          $ref: '#/components/schemas/PaginationModelWithBody'
     ExportCashMovementBusinessRulesModel:
       type: object
       properties:
@@ -2034,6 +2093,31 @@ components:
           nullable: true
         BusinessRules:
           $ref: '#/components/schemas/ExportModelPositionsBusinessRulesModel'
+        Paging:
+          $ref: '#/components/schemas/PaginationModelWithBody'
+    ExportOrdersToGenerateBusinessRulesModel:
+      type: object
+      properties:
+        RebalancingId:
+          type: integer
+          description: The rebalancing whose orders to generate are exported.
+          format: int32
+      description: "Business rules for exporting (api/v1/export) the ungrouped orders\
+        \ of the orders to generate step of a\r\nrebalancing: the rebalancing route\
+        \ parameter of the orders to generate grid\r\n(GET /rebalancings/{rebalancingId}/orderstogenerate)."
+    ExportOrdersToGenerateBusinessRulesModelOrdersToGenerateResponseFilteredBodyModel:
+      type: object
+      properties:
+        FilterRules:
+          type: string
+          nullable: true
+        SortingRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrdersToGenerateResponseSortingRuleModel'
+          nullable: true
+        BusinessRules:
+          $ref: '#/components/schemas/ExportOrdersToGenerateBusinessRulesModel'
         Paging:
           $ref: '#/components/schemas/PaginationModelWithBody'
     ExportPositionBusinessRulesModel:
@@ -2429,6 +2513,8 @@ components:
           $ref: '#/components/schemas/ExportProposedOrdersBusinessRulesModelProposedOrderResponseFilteredBodyModel'
         CashMovementExportRequest:
           $ref: '#/components/schemas/ExportCashMovementBusinessRulesModelCashMovementOrderResponseFilteredBodyModel'
+        GeneratedOrdersUngroupedExportRequest:
+          $ref: '#/components/schemas/ExportOrdersToGenerateBusinessRulesModelOrdersToGenerateResponseFilteredBodyModel'
         ProjectedPortfolioAssigneesExportRequest:
           $ref: '#/components/schemas/ExportProjectedPortfolioAssigneesBusinessRulesModelRebalancingAssigneeResponseFilteredBodyModel'
         ModelPositionsExportRequest:
@@ -2437,6 +2523,8 @@ components:
           $ref: '#/components/schemas/ExportModelAssigneesBusinessRulesModelModelAssigneeResponseFilteredBodyModel'
         RebalancingAssigneesExportRequest:
           $ref: '#/components/schemas/ExportRebalancingAssigneesBusinessRulesModelRebalancingAssigneeResponseFilteredBodyModel'
+        CashManagementExportRequest:
+          $ref: '#/components/schemas/ExportCashManagementBusinessRulesModelCashManagementResponseFilteredBodyModel'
         PositionsExportRequest:
           $ref: '#/components/schemas/ExportPositionBusinessRulesModelPortfolioPositionsResponseFilteredBodyModel'
         SimulationPositionsExportRequest:
@@ -3736,6 +3824,18 @@ components:
       - Warrant
       - Right
       type: string
+    OrdersToGenerateResponseSortingRuleModel:
+      type: object
+      properties:
+        Property:
+          type: string
+          description: Field name that will be used to sort
+          nullable: true
+        Direction:
+          type: string
+          description: The direction that should be applied. 'Asc' or 'Desc'
+          nullable: true
+          example: Asc
     PadsBusinessRulesModel:
       type: object
       properties:
@@ -6686,6 +6786,22 @@ components:
         Type:
           $ref: '#/components/schemas/AssigneeType'
       description: ''
+    UnsavedDepositWithdrawalAmount:
+      type: object
+      properties:
+        AccountId:
+          type: integer
+          description: The account of the cash management row (the virtual account
+            of the sleeve for a sleeve rebalancing).
+          format: int32
+        DepositWithdrawalAmount:
+          type: number
+          description: The cash amount to deposit, negative for a withdrawal; null
+            when the amount was cleared.
+          format: double
+          nullable: true
+      description: A deposit/withdrawal amount entered in the cash management grid
+        of a rebalancing but not saved yet.
     UserAccessLevel:
       enum:
       - BranchAdmin
