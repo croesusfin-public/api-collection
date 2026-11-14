@@ -1823,8 +1823,15 @@ paths:
     post:
       tags:
       - Models
-      summary: Assigns accounts, clients, relationships, or sleeves to a model.
-      description: '`min ref 2026-12 (90.54)`'
+      summary: Assigns accounts, clients, or relationships to a model.
+      description: "`min ref 2026-12 (90.54)`\r\n            \r\nThe assignment is\
+        \ all or nothing: if any identifier cannot be assigned, no identifier is assigned.\r\
+        \n            \r\nResponse codes:\r\n- `200 OK` without body: every identifier\
+        \ was assigned.\r\n- `400 Bad Request`: the request is invalid (empty list,\
+        \ more than 10 identifiers, or unsupported context type;\r\n  only `Account`,\
+        \ `Client` and `Relationship` are accepted), or at least one identifier cannot\
+        \ be assigned;\r\n  no identifier is assigned.\r\n- `404 Not Found`: the model\
+        \ does not exist or is not accessible; no identifier is assigned."
       operationId: assignModel
       parameters:
       - name: modelId
@@ -6933,6 +6940,13 @@ components:
           format: int32
       description: Represents information related to a transaction or operation, including
         the requested ISO currency code.
+    ModelAssignContextType:
+      enum:
+      - Account
+      - Client
+      - Relationship
+      type: string
+      description: Type of the entities that can be assigned to a model.
     ModelAssignRequest:
       required:
       - ContextIds
@@ -6940,14 +6954,14 @@ components:
       type: object
       properties:
         ContextType:
-          $ref: '#/components/schemas/ModelContext'
+          $ref: '#/components/schemas/ModelAssignContextType'
         ContextIds:
           type: array
           items:
             type: integer
             format: int32
-          description: The list of account, client, relationship, or sleeve identifiers
-            to assign.
+          description: The list of account, client, or relationship identifiers to
+            assign.
       description: Request body for assigning accounts, clients, or relationships
         to a model.
     ModelAssigneeResponse:
@@ -7064,13 +7078,6 @@ components:
         AssigneeType:
           $ref: '#/components/schemas/AssigneeType'
       description: Represents an assignee selection.
-    ModelContext:
-      enum:
-      - Account
-      - Client
-      - Relationship
-      - Sleeve
-      type: string
     ModelCreateRequest:
       type: object
       properties:

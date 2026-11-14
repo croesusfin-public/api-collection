@@ -4312,12 +4312,6 @@ components:
           type: number
           description: The annual income of the position.
           format: double
-        IsBlocked:
-          type: boolean
-          description: "Flag indicating if the position is blocked.\r\nNot exposed\
-            \ by the projected portfolio, which reports the directional lock through\
-            \ LockType instead."
-          nullable: true
         IsBlockedSecurity:
           type: boolean
           description: Flag indicating if the position's security is blocked.
@@ -4326,7 +4320,7 @@ components:
           $ref: '#/components/schemas/PositionLockType'
         Tag:
           type: string
-          description: The display style of IsBlocked.
+          description: The display style of the position lock.
           nullable: true
         Frequency:
           type: number
