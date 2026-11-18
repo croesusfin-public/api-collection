@@ -878,6 +878,63 @@ components:
           description: Always null since its not an error
           nullable: true
       description: Standard generic response wrapper
+    CalendarDatePatchRequestJsonPatchDocument:
+      title: CalendarDatePatchRequest
+      type: array
+      items:
+        $ref: '#/components/schemas/PatchRequestOperation'
+      description: "Available operations.<ul>\r\n  <li>WorkDay [ Replace ]</li>\r\n\
+        </ul>"
+    CalendarDateResponse:
+      type: object
+      properties:
+        Date:
+          type: string
+          description: The calendar date.
+          format: date-time
+        WorkDay:
+          type: boolean
+          description: Whether the back office is waiting for the files of that day
+            (the only writable flag).
+        EndWeek:
+          type: boolean
+          description: Whether the date is the last working day of its week.
+        EndMonth:
+          type: boolean
+          description: Whether the date is the last working day of its month.
+        EndYear:
+          type: boolean
+          description: Whether the date is the last working day of its year.
+        HolidayId:
+          type: integer
+          description: The identifier of the holiday observed on the date; null when
+            the date is not a holiday.
+          format: int64
+          nullable: true
+      description: Response containing the flags of a calendar date.
+    CalendarDateResponseStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          $ref: '#/components/schemas/CalendarDateResponse'
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
     CashManagementResponseSortingRuleModel:
       type: object
       properties:
@@ -1299,6 +1356,39 @@ components:
           description: Always null since its not an error
           nullable: true
       description: Standard generic response wrapper
+    CountryHolidayTypeRequest:
+      required:
+      - CountryIso
+      - HolidayType
+      type: object
+      properties:
+        CountryIso:
+          type: string
+          description: The ISO 3166-1 alpha-3 country code (e.g. CAN, USA).
+          nullable: true
+        HolidayType:
+          type: string
+          description: "The holiday type for the country (Market, Settlement, EarlyClose,\
+            \ or None when the\r\ncountry observes the holiday with its market open)."
+          nullable: true
+      description: A country observing a holiday, with the kind of closure it causes.
+    CountryHolidayTypeResponse:
+      required:
+      - CountryIso
+      - HolidayType
+      type: object
+      properties:
+        CountryIso:
+          type: string
+          description: The ISO 3166-1 alpha-3 country code (e.g. CAN, USA), as stored
+            in B_HOLIDAY_COUNTRY.
+          nullable: true
+        HolidayType:
+          type: string
+          description: "The holiday type for the country (Market, Settlement, EarlyClose,\
+            \ or None when the\r\ncountry observes the holiday with its market open)."
+          nullable: true
+      description: The type of a holiday for a country.
     CreateBranchRequest:
       required:
       - Name
@@ -1357,6 +1447,33 @@ components:
           nullable: true
       description: Request to create a branch. The branch's firm is derived from the
         region.
+    CreateHolidayRequest:
+      required:
+      - LocalizedNames
+      type: object
+      properties:
+        LocalizedNames:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocalizedDescriptionRequest'
+          description: The localized names of the holiday. Both the "fr" and "en"
+            names are required.
+          nullable: true
+        Recurrence:
+          $ref: '#/components/schemas/RecurrenceRequest'
+        WeekendAdjustment:
+          type: string
+          description: "How the holiday moves when it falls on a weekend (None, PreviousWorkingDay,\r\
+            \nNextWorkingDay, NearestWorkingDay or NextWorkingDayIfSunday); None when\
+            \ omitted."
+          nullable: true
+        Countries:
+          type: array
+          items:
+            $ref: '#/components/schemas/CountryHolidayTypeRequest'
+          description: The countries observing the holiday with their holiday type.
+          nullable: true
+      description: Request to create a holiday.
     CreateRegionRequest:
       required:
       - FirmId
@@ -2644,6 +2761,7 @@ components:
       - Representative
       - User
       - Empty
+      - AccessLevel
       type: string
     FinancialInstrument:
       enum:
@@ -2799,6 +2917,113 @@ components:
           items:
             $ref: '#/components/schemas/GenericMessage'
           nullable: true
+    HolidayOccurrenceResponse:
+      required:
+      - Holiday
+      - HolidayId
+      type: object
+      properties:
+        HolidayId:
+          type: integer
+          description: The identifier of the holiday occurring on the date.
+          format: int64
+        Date:
+          type: string
+          description: The date of the occurrence.
+          format: date-time
+        Holiday:
+          $ref: '#/components/schemas/HolidayResponse'
+      description: Response containing an occurrence of a holiday on a calendar date.
+    HolidayOccurrenceResponseIEnumerableStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          type: array
+          items:
+            $ref: '#/components/schemas/HolidayOccurrenceResponse'
+          description: The real response object/>
+          nullable: true
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
+    HolidayPatchRequestJsonPatchDocument:
+      title: HolidayPatchRequest
+      type: array
+      items:
+        $ref: '#/components/schemas/PatchRequestOperation'
+      description: "Available operations.<ul>\r\n  <li>LocalizedNames [ Replace ]</li>\r\
+        \n  <li>Recurrence [ Replace ]</li>\r\n  <li>WeekendAdjustment [ Replace ]</li>\r\
+        \n  <li>Countries [ Replace ]</li>\r\n</ul>"
+    HolidayResponse:
+      required:
+      - HolidayId
+      - LocalizedNames
+      type: object
+      properties:
+        HolidayId:
+          type: integer
+          description: The holiday identifier.
+          format: int64
+        LocalizedNames:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocalizedDescriptionResponse'
+          description: The localized names of the holiday.
+          nullable: true
+        Recurrence:
+          $ref: '#/components/schemas/RecurrenceResponse'
+        WeekendAdjustment:
+          type: string
+          description: "How the holiday moves when it falls on a weekend (None, PreviousWorkingDay,\r\
+            \nNextWorkingDay, NearestWorkingDay or NextWorkingDayIfSunday); null on\
+            \ a light listing."
+          nullable: true
+        Countries:
+          type: array
+          items:
+            $ref: '#/components/schemas/CountryHolidayTypeResponse'
+          description: The countries observing the holiday with their holiday type;
+            null on a light listing.
+          nullable: true
+      description: Response containing a holiday definition.
+    HolidayResponseStandard:
+      type: object
+      properties:
+        Time:
+          type: string
+          description: The UTC time at which the request was executed
+          format: date-time
+          readOnly: true
+        CorrelationId:
+          type: string
+          description: A unique string that is used to trace the flow to executed
+            request
+          nullable: true
+          readOnly: true
+        Response:
+          $ref: '#/components/schemas/HolidayResponse'
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: Always null since its not an error
+          nullable: true
+      description: Standard generic response wrapper
     IncomePeriodModel:
       required:
       - Income
@@ -3740,6 +3965,38 @@ components:
           $ref: '#/components/schemas/MyDocumentsBusinessRulesModel'
         Paging:
           $ref: '#/components/schemas/PaginationModelWithBody'
+    NthWeekdayRequest:
+      required:
+      - Weekday
+      type: object
+      properties:
+        N:
+          type: integer
+          description: The occurrence rank of the weekday within the month (1 to 5,
+            e.g. 3 for the third Monday).
+          format: int32
+        Weekday:
+          type: string
+          description: The targeted weekday (Sunday to Saturday, e.g. Monday).
+          nullable: true
+      description: A recurrence day rule targeting the nth occurrence of a weekday
+        in a month.
+    NthWeekdayResponse:
+      required:
+      - Weekday
+      type: object
+      properties:
+        N:
+          type: integer
+          description: The occurrence rank of the weekday within the month (e.g. 3
+            for the third Monday).
+          format: int32
+        Weekday:
+          type: string
+          description: The targeted weekday (e.g. Monday).
+          nullable: true
+      description: A recurrence day rule targeting the nth occurrence of a weekday
+        in a month.
     ObjectScimListResponse:
       type: object
       properties:
@@ -5074,6 +5331,93 @@ components:
           description: The direction that should be applied. 'Asc' or 'Desc'
           nullable: true
           example: Asc
+    RecurrenceRequest:
+      type: object
+      properties:
+        DayOfMonth:
+          type: integer
+          description: The fixed day of the month (e.g. 25); set it when the rule
+            targets a fixed day.
+          format: int32
+          nullable: true
+        NthWeekday:
+          $ref: '#/components/schemas/NthWeekdayRequest'
+        FirstWorkingDay:
+          type: boolean
+          description: True when the rule targets the first working day of the month.
+          nullable: true
+        LastDay:
+          type: boolean
+          description: True when the rule targets the last day of the month.
+          nullable: true
+        LastWorkingDay:
+          type: boolean
+          description: True when the rule targets the last working day of the month.
+          nullable: true
+        NthWorkingDay:
+          type: integer
+          description: The nth working day of the month; set it when the rule targets
+            a working day rank.
+          format: int32
+          nullable: true
+        Months:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: The months (1-12) in which the holiday occurs; at least one
+            is required.
+          nullable: true
+        YearInterval:
+          type: integer
+          description: The interval in years between two occurrences (1 for every
+            year).
+          format: int32
+      description: The recurrence rule of a holiday; exactly one of the day rules
+        must be provided.
+    RecurrenceResponse:
+      type: object
+      properties:
+        DayOfMonth:
+          type: integer
+          description: The fixed day of the month (e.g. 25); only set when the rule
+            targets a fixed day.
+          format: int32
+          nullable: true
+        NthWeekday:
+          $ref: '#/components/schemas/NthWeekdayResponse'
+        FirstWorkingDay:
+          type: boolean
+          description: True when the rule targets the first working day of the month.
+          nullable: true
+        LastDay:
+          type: boolean
+          description: True when the rule targets the last day of the month.
+          nullable: true
+        LastWorkingDay:
+          type: boolean
+          description: True when the rule targets the last working day of the month.
+          nullable: true
+        NthWorkingDay:
+          type: integer
+          description: The nth working day of the month; only set when the rule targets
+            a working day rank.
+          format: int32
+          nullable: true
+        Months:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: The months (1-12) in which the holiday occurs.
+          nullable: true
+        YearInterval:
+          type: integer
+          description: The interval in years between two occurrences (1 for every
+            year).
+          format: int32
+      description: The recurrence rule of a holiday; exactly one of the day rules
+        is populated.
     ReferenceDictionaryEntryResponse:
       required:
       - Descriptions
