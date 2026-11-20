@@ -7215,6 +7215,8 @@ components:
           nullable: true
         MaxMarketValuePercentage:
           type: number
+          description: Gets or sets the maximum percentage of the market value allowed
+            for the position.
           format: double
           readOnly: true
       description: "Represents the valuation details of a financial position, including\

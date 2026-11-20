@@ -1996,6 +1996,29 @@ components:
             should be addressed
           nullable: true
       description: Standard generic response for errors cases
+    ExportAuditRequest:
+      type: object
+      properties:
+        FunctionId:
+          type: string
+          description: Gets or sets the DataHub FUNCTION_ID identifying the exported
+            grid (e.g. `PortfolioDataGrid`).
+          nullable: true
+        RecordCount:
+          type: integer
+          description: Gets or sets the number of records written to the exported
+            file.
+          format: int32
+        RepresentativeCodes:
+          type: array
+          items:
+            type: string
+          description: Gets or sets the distinct CP (representative) codes present
+            in the exported records.
+          nullable: true
+      description: "Reports a file export produced by the client (a datagrid's client-side\
+        \ CSV export) so it is\r\nrecorded in the DataHub audit trail (B_DATA_HUB),\
+        \ as the exports processed by the server are."
     ExportCashManagementBusinessRulesModel:
       type: object
       properties:
@@ -4827,6 +4850,13 @@ components:
           type: boolean
           description: Indicates whether the position can be traded. This is determined
             by the type of account.
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StandardMessage'
+          description: The messages raised for the position itself, typically its
+            reconciliation warnings.
+          nullable: true
       description: The data for the positions of a portfolio.
     PositionDataModelSortingRuleModel:
       type: object
