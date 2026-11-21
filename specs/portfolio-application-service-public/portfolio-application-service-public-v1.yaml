@@ -6889,14 +6889,12 @@ components:
         TotalGainLoss:
           type: number
           format: double
-          nullable: true
         Total:
           type: number
           format: double
         TotalBookValue:
           type: number
           format: double
-          nullable: true
     GainsLossesSummaryResponseStandard:
       type: object
       properties:
