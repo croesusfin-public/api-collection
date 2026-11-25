@@ -1581,6 +1581,19 @@ components:
             \ will be returned using their \r\nown currency."
           nullable: true
           example: USD
+    DataTransferRequest:
+      required:
+      - DestinationUserId
+      - Type
+      type: object
+      properties:
+        Type:
+          $ref: '#/components/schemas/TransferableDataType'
+        DestinationUserId:
+          type: integer
+          description: The user receiving the data.
+          format: int64
+      description: Moves one kind of data to a destination user.
     DecimalValue:
       type: object
       properties:
@@ -7145,6 +7158,12 @@ components:
           $ref: '#/components/schemas/TransactionsPadsBusinessRulesModel'
         Paging:
           $ref: '#/components/schemas/PaginationModelWithBody'
+    TransferableDataType:
+      enum:
+      - Agenda
+      - Content
+      type: string
+      description: A kind of data that can be transferred from one user to another.
     UnderlyingEntitySelection:
       required:
       - Id
