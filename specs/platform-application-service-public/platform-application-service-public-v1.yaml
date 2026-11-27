@@ -1854,6 +1854,8 @@ components:
           nullable: true
         IsExternal:
           type: boolean
+        ScanStatus:
+          $ref: '#/components/schemas/DocumentScanStatus'
     DocumentResponsePaging:
       type: object
       properties:
@@ -1933,6 +1935,18 @@ components:
           description: Always null since its not an error
           nullable: true
       description: Standard generic response wrapper
+    DocumentScanStatus:
+      enum:
+      - NotApplicable
+      - NotScanned
+      - Pending
+      - PendingOverdue
+      - Clean
+      - Infected
+      - Unscannable
+      type: string
+      description: Malware scan state of a document, read from its stored content
+        when the document is requested.
     DocumentTransferRequest:
       required:
       - TargetContextType

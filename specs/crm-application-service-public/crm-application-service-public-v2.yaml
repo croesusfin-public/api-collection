@@ -2151,6 +2151,30 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflict
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Error'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Unprocessable Content
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Error'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /crm/api/v2/Relationships/{relationshipId}/Emails:
     get:
       tags:
@@ -5137,6 +5161,8 @@ components:
           type: string
           description: The comment associated with the Document
           nullable: true
+        ScanStatus:
+          $ref: '#/components/schemas/DocumentScanStatus'
       description: A document with his related information
     DocumentPaging:
       type: object
@@ -5182,6 +5208,18 @@ components:
         $ref: '#/components/schemas/PatchRequestOperation'
       description: "Available operations.<ul>\r\n  <li>Comment [ Replace, Add ]</li>\r\
         \n</ul>"
+    DocumentScanStatus:
+      enum:
+      - NotApplicable
+      - NotScanned
+      - Pending
+      - PendingOverdue
+      - Clean
+      - Infected
+      - Unscannable
+      type: string
+      description: Malware scan state of a document, read from its stored content
+        when the document is requested.
     DocumentStandard:
       type: object
       properties:
